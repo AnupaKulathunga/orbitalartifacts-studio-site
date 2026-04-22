@@ -58,6 +58,18 @@ export const SCENE_SLUGS_QUERY = groq`
   *[_type == "scene" && defined(slug.current)].slug.current
 `;
 
+export const PRESS_ENTRIES_QUERY = groq`
+  *[_type == "pressEntry"] | order(date desc) {
+    _id,
+    publication,
+    date,
+    title,
+    url,
+    quote,
+    "logoUrl": logo.asset->url,
+  }
+`;
+
 export const SITE_SETTINGS_QUERY = groq`
   *[_type == "siteSettings"][0]{
     tagline,
