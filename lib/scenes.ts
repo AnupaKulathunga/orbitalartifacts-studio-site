@@ -1,13 +1,9 @@
 /**
- * Scene data model + static seed catalogue.
+ * Scene data model + Sanity-backed catalogue helpers.
  *
- * The types here mirror the Sanity `scene` schema in §9 exactly so that when
- * M6 flips the data source from this file to Sanity GROQ queries, no
- * consumer needs to change. In M3 and M4 every page reads from `SEED_SCENES`
- * via the helpers at the bottom of this file.
- *
- * TODO(owner): every narrative is currently a Lorem placeholder — to be
- * edited in Sanity once the Studio is live (M5 + M6).
+ * Types mirror the Sanity `scene` schema in §9. `SEED_SCENES` remains the
+ * canonical seed source for `scripts/seed-sanity.ts`; the helpers at the
+ * bottom of this file fetch live documents from Sanity via GROQ.
  */
 
 export const REGIONS = [
@@ -215,30 +211,34 @@ export const SEED_SCENES: ReadonlyArray<Scene> = [
   },
 ];
 
-export function getAllScenes(): ReadonlyArray<Scene> {
-  return SEED_SCENES;
+import { client } from "@/sanity/lib/client";
+import {
+  ALL_SCENES_QUERY,
+  FEATURED_SCENES_QUERY,
+  SCENE_BY_SLUG_QUERY,
+  SCENE_SLUGS_QUERY,
+} from "@/sanity/queries";
+
+export async function getAllScenes(): Promise<ReadonlyArray<Scene>> {
+  return client.fetch<Scene[]>(ALL_SCENES_QUERY);
 }
 
-export function getFeaturedScenes(limit = 3): ReadonlyArray<Scene> {
-  return SEED_SCENES.filter((s) => s.featured).slice(0, limit);
+export async function getFeaturedScenes(limit = 3): Promise<ReadonlyArray<Scene>> {
+  const scenes = await client.fetch<Scene[]>(FEATURED_SCENES_QUERY);
+  return scenes.slice(0, limit);
 }
 
-export function getFeaturedPool(): ReadonlyArray<Scene> {
-  return SEED_SCENES.filter((s) => s.featured);
+export async function getFeaturedPool(): Promise<ReadonlyArray<Scene>> {
+  return client.fetch<Scene[]>(FEATURED_SCENES_QUERY);
 }
 
-export function getSceneBySlug(slug: string): Scene | undefined {
-  return SEED_SCENES.find((s) => s.slug === slug);
+export async function getSceneBySlug(slug: string): Promise<Scene | undefined> {
+  const scene = await client.fetch<Scene | null>(SCENE_BY_SLUG_QUERY, { slug });
+  return scene ?? undefined;
 }
 
-/**
- * Ordered catalogue used for prev/next scene navigation on detail pages.
- * Newest-first matches the archive's default sort.
- */
-export function getChronologicalScenes(): ReadonlyArray<Scene> {
-  return [...SEED_SCENES].sort((a, b) =>
-    b.publishedAt.localeCompare(a.publishedAt),
-  );
+export async function getAllSceneSlugs(): Promise<ReadonlyArray<string>> {
+  return client.fetch<string[]>(SCENE_SLUGS_QUERY);
 }
 
 export type SceneNeighbours = {
@@ -246,8 +246,12 @@ export type SceneNeighbours = {
   next?: Scene;
 };
 
-export function getSceneNeighbours(slug: string): SceneNeighbours {
-  const ordered = getChronologicalScenes();
+/**
+ * Prev/next within the newest-first catalogue — matches the archive's
+ * default sort so navigating feels continuous with how the user arrived.
+ */
+export async function getSceneNeighbours(slug: string): Promise<SceneNeighbours> {
+  const ordered = await getAllScenes();
   const idx = ordered.findIndex((s) => s.slug === slug);
   if (idx === -1) return {};
   return {

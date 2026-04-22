@@ -9,8 +9,10 @@ export const metadata: Metadata = {
     "Every scene in the Orbital Artifacts archive — filter by region, sensor, and treatment.",
 };
 
-export default function ArchivePage() {
-  const scenes = getAllScenes();
+export const revalidate = 60;
+
+export default async function ArchivePage() {
+  const scenes = await getAllScenes();
 
   return (
     <section className="mx-auto max-w-6xl px-6 py-24">

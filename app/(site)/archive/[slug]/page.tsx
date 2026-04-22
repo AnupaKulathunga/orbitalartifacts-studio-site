@@ -4,15 +4,18 @@ import { notFound } from "next/navigation";
 import { CornerBrackets } from "@/components/brand/CornerBrackets";
 import { SceneThumbnail } from "@/components/scene/SceneThumbnail";
 import {
-  getAllScenes,
+  getAllSceneSlugs,
   getSceneBySlug,
   getSceneNeighbours,
 } from "@/lib/scenes";
 
 type Params = Promise<{ slug: string }>;
 
-export function generateStaticParams() {
-  return getAllScenes().map((s) => ({ slug: s.slug }));
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const slugs = await getAllSceneSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -21,7 +24,7 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const scene = getSceneBySlug(slug);
+  const scene = await getSceneBySlug(slug);
   if (!scene) return { title: "Scene not found" };
   return {
     title: `${scene.title} — ${scene.subtitle}`,
@@ -31,10 +34,10 @@ export async function generateMetadata({
 
 export default async function ScenePage({ params }: { params: Params }) {
   const { slug } = await params;
-  const scene = getSceneBySlug(slug);
+  const scene = await getSceneBySlug(slug);
   if (!scene) notFound();
 
-  const { prev, next } = getSceneNeighbours(slug);
+  const { prev, next } = await getSceneNeighbours(slug);
 
   return (
     <article className="mx-auto max-w-6xl px-6 py-16 sm:py-20">

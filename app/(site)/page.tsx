@@ -5,9 +5,13 @@ import { OriginQuestion } from "@/components/home/OriginQuestion";
 import { ProcessTeaser } from "@/components/home/ProcessTeaser";
 import { getFeaturedPool, getFeaturedScenes } from "@/lib/scenes";
 
-export default function HomePage() {
-  const featuredPool = getFeaturedPool();
-  const strip = getFeaturedScenes(3);
+export const revalidate = 60;
+
+export default async function HomePage() {
+  const [featuredPool, strip] = await Promise.all([
+    getFeaturedPool(),
+    getFeaturedScenes(3),
+  ]);
 
   return (
     <>
