@@ -57,3 +57,13 @@ export const SCENE_BY_SLUG_QUERY = groq`
 export const SCENE_SLUGS_QUERY = groq`
   *[_type == "scene" && defined(slug.current)].slug.current
 `;
+
+export const SITE_SETTINGS_QUERY = groq`
+  *[_type == "siteSettings"][0]{
+    tagline,
+    "originQuestion": pt::text(originQuestion),
+    contactEmail,
+    "socialLinks": coalesce(socialLinks[]{ platform, url }, []),
+    "marketplaceLinks": coalesce(marketplaceLinks[]{ platform, url }, []),
+  }
+`;

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
-import { siteConfig, type SiteLink } from "@/lib/siteConfig";
+import { getSiteSettings, type SiteLink } from "@/lib/siteConfig";
 
 const SITE_LINKS = [
   { href: "/archive", label: "Archive" },
@@ -10,7 +10,8 @@ const SITE_LINKS = [
   { href: "/contact", label: "Contact" },
 ] as const;
 
-export function Footer() {
+export async function Footer() {
+  const settings = await getSiteSettings();
   const year = new Date().getFullYear();
 
   return (
@@ -19,10 +20,10 @@ export function Footer() {
         <div className="md:col-span-1">
           <Logo variant="lockup" markSize={48} href="/" />
           <p className="mt-5 font-serif italic text-ink-2">
-            {siteConfig.tagline}
+            {settings.tagline}
           </p>
           <p className="mt-2 font-sans text-sm text-muted">
-            {siteConfig.byline}
+            {settings.byline}
           </p>
         </div>
 
@@ -40,19 +41,41 @@ export function Footer() {
         </FooterColumn>
 
         <FooterColumn title="Buy">
-          {siteConfig.marketplaceLinks.map((m) => (
-            <FooterItem key={m.platform}>
-              <ExternalLink link={m}>{m.platform}</ExternalLink>
+          {settings.marketplaceLinks.length === 0 ? (
+            <FooterItem>
+              <span
+                className="font-sans text-sm text-muted/60"
+                title="Coming soon"
+              >
+                Coming soon
+              </span>
             </FooterItem>
-          ))}
+          ) : (
+            settings.marketplaceLinks.map((m) => (
+              <FooterItem key={m.platform}>
+                <ExternalLink link={m}>{m.platform}</ExternalLink>
+              </FooterItem>
+            ))
+          )}
         </FooterColumn>
 
         <FooterColumn title="Follow">
-          {siteConfig.socialLinks.map((s) => (
-            <FooterItem key={s.platform}>
-              <ExternalLink link={s}>{s.platform}</ExternalLink>
+          {settings.socialLinks.length === 0 ? (
+            <FooterItem>
+              <span
+                className="font-sans text-sm text-muted/60"
+                title="Coming soon"
+              >
+                Coming soon
+              </span>
             </FooterItem>
-          ))}
+          ) : (
+            settings.socialLinks.map((s) => (
+              <FooterItem key={s.platform}>
+                <ExternalLink link={s}>{s.platform}</ExternalLink>
+              </FooterItem>
+            ))
+          )}
         </FooterColumn>
       </div>
 
@@ -87,11 +110,6 @@ function FooterItem({ children }: { children: React.ReactNode }) {
   return <li>{children}</li>;
 }
 
-/**
- * External link for marketplaces / socials. When the URL is still `#`
- * (owner hasn't supplied it yet), we render as a disabled-looking span so
- * the footer layout still reads correctly without a dead link.
- */
 function ExternalLink({
   link,
   children,
@@ -99,18 +117,6 @@ function ExternalLink({
   link: SiteLink;
   children: React.ReactNode;
 }) {
-  const placeholder = !link.url || link.url === "#";
-  if (placeholder) {
-    return (
-      <span
-        className="font-sans text-sm text-muted/60"
-        title="Coming soon"
-        aria-disabled="true"
-      >
-        {children}
-      </span>
-    );
-  }
   return (
     <a
       href={link.url}

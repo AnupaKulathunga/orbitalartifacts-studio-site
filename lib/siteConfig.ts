@@ -1,30 +1,54 @@
 /**
- * Site-level static config used by Header / Footer / About.
- *
- * In M6 this becomes the launch-day fallback when Sanity's `siteSettings`
- * singleton is empty. Treat this file as the source of truth until then.
- *
- * TODO(owner): fill in real handles + shop URLs. Every `#` placeholder
- * should be replaced before going live.
+ * Site-level config — merges Sanity's `siteSettings` singleton with static
+ * defaults. Sanity is the source of truth when present; the static block
+ * kicks in as a graceful fallback if the singleton is empty or missing.
  */
+import { client } from "@/sanity/lib/client";
+import { SITE_SETTINGS_QUERY } from "@/sanity/queries";
+
 export type SiteLink = {
   platform: string;
   url: string;
-  handle?: string;
 };
 
-export const siteConfig = {
-  contactEmail: "hello@orbitalartifacts.shop",
+export type SiteSettings = {
+  tagline: string;
+  originQuestion: string;
+  byline: string;
+  contactEmail: string;
+  socialLinks: SiteLink[];
+  marketplaceLinks: SiteLink[];
+};
+
+const STATIC_FALLBACK: SiteSettings = {
   tagline: "Earth data, reimagined as art.",
+  originQuestion:
+    "What if the way satellites see our planet is itself a kind of art?",
   byline: "By Anupa Kulathunga · Sri Lanka",
-  socialLinks: [
-    { platform: "Instagram", url: "#", handle: "" },
-    { platform: "TikTok", url: "#", handle: "" },
-    { platform: "Pinterest", url: "#", handle: "" },
-  ] satisfies SiteLink[],
-  marketplaceLinks: [
-    { platform: "Etsy", url: "#" },
-    { platform: "Redbubble", url: "#" },
-    { platform: "Teespring", url: "#" },
-  ] satisfies SiteLink[],
-} as const;
+  contactEmail: "hello@orbitalartifacts.shop",
+  socialLinks: [],
+  marketplaceLinks: [],
+};
+
+type SanitySiteSettings = {
+  tagline?: string;
+  originQuestion?: string;
+  contactEmail?: string;
+  socialLinks?: SiteLink[];
+  marketplaceLinks?: SiteLink[];
+} | null;
+
+export async function getSiteSettings(): Promise<SiteSettings> {
+  const doc = await client.fetch<SanitySiteSettings>(SITE_SETTINGS_QUERY);
+  if (!doc) return STATIC_FALLBACK;
+  return {
+    tagline: doc.tagline?.trim() || STATIC_FALLBACK.tagline,
+    originQuestion:
+      doc.originQuestion?.trim() || STATIC_FALLBACK.originQuestion,
+    byline: STATIC_FALLBACK.byline,
+    contactEmail:
+      doc.contactEmail?.trim() || STATIC_FALLBACK.contactEmail,
+    socialLinks: doc.socialLinks ?? [],
+    marketplaceLinks: doc.marketplaceLinks ?? [],
+  };
+}
