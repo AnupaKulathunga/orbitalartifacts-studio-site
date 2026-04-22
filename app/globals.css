@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+/* =========================================================================
+   Orbital Artifacts — Signal design tokens
+   Palette matches the printed banner system exactly. Warm paper throughout;
+   no dark mode (spec §4).
+   ========================================================================= */
+@theme {
+  --color-paper: #ebe5d6;
+  --color-paper-2: #e8e3d8;
+  --color-ink: #0a0a0a;
+  --color-ink-2: #2b2a26;
+  --color-muted: #5a5348;
+  --color-rust: #c94f2a;
+  --color-sand: #c9a96e;
+
+  /* Font families — the actual font files are loaded via next/font in
+     app/layout.tsx, which exposes these CSS variables on <html>. */
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "ss02";
+  }
+
+  ::selection {
+    background-color: var(--color-rust);
+    color: var(--color-paper);
+  }
+
+  /* Respect users who ask for less motion — spec §8. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
