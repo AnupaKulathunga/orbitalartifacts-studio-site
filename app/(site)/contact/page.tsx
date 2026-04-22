@@ -13,7 +13,7 @@ export const revalidate = 60;
 
 export default async function ContactPage() {
   const { contactEmail } = await getSiteSettings();
-  const configured = Boolean(process.env.WEB3FORMS_ACCESS_KEY);
+  const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY ?? "";
 
   return (
     <section className="mx-auto max-w-2xl px-6 py-24">
@@ -26,8 +26,8 @@ export default async function ContactPage() {
         everything and reply within a few days.
       </p>
 
-      {configured ? (
-        <ContactForm />
+      {accessKey ? (
+        <ContactForm accessKey={accessKey} />
       ) : (
         <div className="mt-12 border border-sand/40 bg-paper-2/60 p-8">
           <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted">

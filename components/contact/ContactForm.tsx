@@ -17,7 +17,17 @@ type Status =
   | { kind: "success" }
   | { kind: "error"; message: string };
 
-export function ContactForm() {
+type ContactFormProps = {
+  accessKey: string;
+};
+
+/**
+ * Posts directly to Web3Forms. Their free tier rejects server-side
+ * submissions, so the access key has to live in the browser. That's by
+ * design on Web3Forms' end — the key is an account identifier, not a
+ * secret — and rate limiting / spam filtering happens on their side.
+ */
+export function ContactForm({ accessKey }: ContactFormProps) {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -25,29 +35,41 @@ export function ContactForm() {
     const form = event.currentTarget;
     const data = new FormData(form);
 
+    const name = String(data.get("name") ?? "").trim();
+    const email = String(data.get("email") ?? "").trim();
+    const type = String(data.get("type") ?? "").trim();
+    const message = String(data.get("message") ?? "").trim();
+
     setStatus({ kind: "submitting" });
 
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify({
-          name: data.get("name"),
-          email: data.get("email"),
-          type: data.get("type"),
-          message: data.get("message"),
+          access_key: accessKey,
+          from_name: "Orbital Artifacts contact form",
+          subject: `[OA] ${type} inquiry from ${name}`,
+          name,
+          email,
+          type,
+          message,
+          botcheck: "",
         }),
       });
 
       const body = (await response.json().catch(() => null)) as {
-        error?: string;
-        ok?: boolean;
+        success?: boolean;
+        message?: string;
       } | null;
 
-      if (!response.ok || !body?.ok) {
+      if (!response.ok || !body?.success) {
         setStatus({
           kind: "error",
-          message: body?.error ?? "Something went wrong. Try again?",
+          message: body?.message ?? "Could not send your message.",
         });
         return;
       }
