@@ -230,3 +230,28 @@ export function getFeaturedPool(): ReadonlyArray<Scene> {
 export function getSceneBySlug(slug: string): Scene | undefined {
   return SEED_SCENES.find((s) => s.slug === slug);
 }
+
+/**
+ * Ordered catalogue used for prev/next scene navigation on detail pages.
+ * Newest-first matches the archive's default sort.
+ */
+export function getChronologicalScenes(): ReadonlyArray<Scene> {
+  return [...SEED_SCENES].sort((a, b) =>
+    b.publishedAt.localeCompare(a.publishedAt),
+  );
+}
+
+export type SceneNeighbours = {
+  prev?: Scene;
+  next?: Scene;
+};
+
+export function getSceneNeighbours(slug: string): SceneNeighbours {
+  const ordered = getChronologicalScenes();
+  const idx = ordered.findIndex((s) => s.slug === slug);
+  if (idx === -1) return {};
+  return {
+    prev: idx > 0 ? ordered[idx - 1] : undefined,
+    next: idx < ordered.length - 1 ? ordered[idx + 1] : undefined,
+  };
+}
