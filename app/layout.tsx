@@ -57,7 +57,7 @@ export default function RootLayout({
       lang="en"
       className={`${fraunces.variable} ${archivo.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="bg-paper text-ink">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

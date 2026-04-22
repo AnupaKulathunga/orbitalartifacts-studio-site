@@ -7,12 +7,19 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "seed:sanity": "node --env-file=.env.local --import tsx scripts/seed-sanity.ts"
   },
   "dependencies": {
+    "@portabletext/react": "^6.0.3",
+    "@sanity/image-url": "^2.1.1",
+    "@sanity/vision": "^4.22.0",
     "next": "^15.1.0",
+    "next-sanity": "^11.6.13",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "sanity": "^4.22.0",
+    "styled-components": "^6.4.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
@@ -22,6 +29,7 @@
     "eslint": "^9.15.0",
     "eslint-config-next": "^15.1.0",
     "tailwindcss": "^4.0.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.6.3"
   }
 }
