@@ -1,49 +1,106 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 type RevealProps = {
   children: ReactNode;
-  /** Stagger offset when several reveals are visible at once, in seconds. */
+  /** Stagger offset when adjacent reveals fire together. */
   delay?: number;
-  /** Travel distance of the fade-up, in px. Kept small by default. */
+  /** Travel distance of the fade-up, in px. */
   y?: number;
   className?: string;
-  /** Render as a different element (e.g. `section`, `li`). Defaults to div. */
+  /** Underlying element. Defaults to div so it doesn't affect layout. */
   as?: "div" | "section" | "article" | "li";
 };
 
 /**
- * Fade-up-on-scroll wrapper — spec §8. Once per section, 0.4s ease-out.
- * Honors `prefers-reduced-motion` by rendering children with no animation
- * at all when the user has asked for less motion.
+ * Scroll-reveal wrapper — fades content up as it enters the viewport.
+ *
+ * Uses a plain IntersectionObserver with a generous rootMargin so the
+ * trigger fires as soon as ~15% of the element crosses into view. Once
+ * visible, the observer disconnects so re-entering the viewport (via
+ * scrolling up) doesn't retrigger — matches spec §8 "once per section."
+ *
+ * Honors `prefers-reduced-motion`: the check runs inside the effect
+ * (not during render) so SSR output stays identical to the animated
+ * path. If the user has reduced-motion on, we immediately flip to
+ * visible without any transition.
  */
 export function Reveal({
   children,
   delay = 0,
   y = 24,
   className,
-  as = "div",
+  as: Tag = "div",
 }: RevealProps) {
-  const reduce = useReducedMotion();
+  const ref = useRef<HTMLElement>(null);
+  const [visible, setVisible] = useState(false);
 
-  if (reduce) {
-    const Static = as;
-    return <Static className={className}>{children}</Static>;
-  }
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
 
-  const MotionTag = motion[as] as typeof motion.div;
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (reducedMotion) {
+      setVisible(true);
+      return;
+    }
+
+    // If the element is already on-screen on mount (e.g. short page, or
+    // back/forward nav restored scroll), show it immediately without
+    // animation delay — avoids the "why didn't it fade" perception when
+    // the user lands mid-page.
+    const rect = el.getBoundingClientRect();
+    const inViewOnMount =
+      rect.top < window.innerHeight && rect.bottom > 0;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.15,
+        // Trigger slightly before the element hits the viewport edge.
+        rootMargin: "0px 0px -10% 0px",
+      },
+    );
+
+    // Defer the observer so the initial paint renders with `visible = false`
+    // — that way the very first IO callback (which fires synchronously on
+    // observe) animates from hidden to visible rather than skipping it.
+    const id = window.requestAnimationFrame(() => {
+      if (inViewOnMount) {
+        setVisible(true);
+        return;
+      }
+      observer.observe(el);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(id);
+      observer.disconnect();
+    };
+  }, []);
 
   return (
-    <MotionTag
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-10% 0px -10% 0px" }}
-      transition={{ duration: 0.4, ease: "easeOut", delay }}
-      className={className}
+    <Tag
+      // @ts-expect-error — ref typing narrows per tag but runtime is fine
+      ref={ref}
+      className={cn(className)}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "none" : `translateY(${y}px)`,
+        transition: `opacity 500ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}s, transform 500ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}s`,
+        willChange: visible ? undefined : "opacity, transform",
+      }}
     >
       {children}
-    </MotionTag>
+    </Tag>
   );
 }
