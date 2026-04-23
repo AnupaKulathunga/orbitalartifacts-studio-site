@@ -66,7 +66,9 @@ export function HeroRotator({ scenes }: HeroRotatorProps) {
               <Image
                 key={scene.slug}
                 src={scene.imageUrl ?? ""}
-                alt={`${scene.title}, ${scene.subtitle} — ${scene.sensor}`}
+                alt={[scene.title, scene.subtitle, scene.sensor]
+                  .filter(Boolean)
+                  .join(" — ")}
                 fill
                 sizes="(min-width: 1024px) 45vw, 100vw"
                 priority={i === 0}
@@ -88,7 +90,7 @@ export function HeroRotator({ scenes }: HeroRotatorProps) {
             </span>
             {current.catalogueNumber} · {current.title}
           </span>
-          <span>{current.coords.formatted}</span>
+          <span>{current.coords?.formatted ?? current.subtitle ?? ""}</span>
         </div>
 
         {/* Tiny progress dots — visually 1px tall but each button gets a

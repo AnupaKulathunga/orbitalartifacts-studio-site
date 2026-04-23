@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 type RegionFilter = Region | "All";
 type SensorFilter = "All" | "Sentinel-2" | "Landsat" | "ASTER" | "MODIS";
 type TreatmentFilter = Treatment | "All";
-type SortMode = "Newest" | "Oldest" | "Region A–Z";
+type SortMode = "Catalogue" | "Newest" | "Oldest" | "Region A–Z";
 
 const SENSOR_FILTERS: ReadonlyArray<SensorFilter> = [
   "All",
@@ -20,6 +20,7 @@ const SENSOR_FILTERS: ReadonlyArray<SensorFilter> = [
   "MODIS",
 ];
 const SORT_MODES: ReadonlyArray<SortMode> = [
+  "Catalogue",
   "Newest",
   "Oldest",
   "Region A–Z",
@@ -27,15 +28,16 @@ const SORT_MODES: ReadonlyArray<SortMode> = [
 
 function matchesSensor(scene: Scene, filter: SensorFilter): boolean {
   if (filter === "All") return true;
-  if (filter === "Landsat")
-    return scene.sensor === "Landsat 8" || scene.sensor === "Landsat 9";
+  if (filter === "Landsat") return /^Landsat/i.test(scene.sensor ?? "");
   return (scene.sensor as string) === filter;
 }
 
 function compareScenes(a: Scene, b: Scene, mode: SortMode): number {
+  if (mode === "Catalogue") return a.catalogueNumber.localeCompare(b.catalogueNumber);
   if (mode === "Newest") return b.publishedAt.localeCompare(a.publishedAt);
   if (mode === "Oldest") return a.publishedAt.localeCompare(b.publishedAt);
-  const byRegion = a.region.localeCompare(b.region);
+  // Region sort — scenes without a region sink to the bottom.
+  const byRegion = (a.region ?? "zzz").localeCompare(b.region ?? "zzz");
   return byRegion !== 0 ? byRegion : a.title.localeCompare(b.title);
 }
 
@@ -48,7 +50,9 @@ export function ArchiveBrowser({ scenes }: ArchiveBrowserProps) {
   const [region, setRegion] = useState<RegionFilter>("All");
   const [sensor, setSensor] = useState<SensorFilter>("All");
   const [treatment, setTreatment] = useState<TreatmentFilter>("All");
-  const [sort, setSort] = useState<SortMode>("Newest");
+  // Default to catalogue order since EaA ingests all share a timestamp —
+  // "Newest" is only useful after you add originally-processed scenes.
+  const [sort, setSort] = useState<SortMode>("Catalogue");
 
   const filtered = useMemo(() => {
     return scenes

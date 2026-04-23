@@ -1,4 +1,5 @@
 import type { SchemaTypeDefinition } from "sanity";
+import { curationSession } from "./curationSession";
 import { coords } from "./objects/coords";
 import { marketplaceLink } from "./objects/marketplaceLink";
 import { pressEntry } from "./pressEntry";
@@ -13,4 +14,5 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   scene,
   pressEntry,
   siteSettings,
+  curationSession,
 ];

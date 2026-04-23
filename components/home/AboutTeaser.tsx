@@ -13,8 +13,6 @@ import { MetaStrip } from "@/components/brand/MetaStrip";
  *
  * TODO(owner): when a portrait photo is available, drop it at
  * `/public/brand/portrait.jpg` and swap the <Image> src below.
- * TODO(owner): replace the Lorem bio with a 2-sentence distillation of the
- * full About page copy.
  */
 export function AboutTeaser() {
   return (
@@ -50,9 +48,10 @@ export function AboutTeaser() {
             from Sri Lanka.
           </h2>
           <p className="mt-7 max-w-xl font-sans text-base leading-[1.65] text-ink-2">
-            {/* TODO(owner): Anupa to supply a 2-sentence bio for this teaser. */}
-            Lorem ipsum — About teaser copy pending. The full origin story
-            and process will live on the About page.
+            A one-person studio working at the seam between Earth
+            observation and image-making. The source material is
+            open &mdash; Landsat, Sentinel, the public archive &mdash;
+            and the output is print, framed with its own coordinates.
           </p>
           <Link
             href="/about"

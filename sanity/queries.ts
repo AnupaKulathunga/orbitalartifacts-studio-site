@@ -13,10 +13,12 @@ import { groq } from "next-sanity";
  *   (emphasis / italics), swap this for the raw array.
  */
 const SCENE_PROJECTION = groq`{
+  source,
   catalogueNumber,
   "slug": slug.current,
   title,
   subtitle,
+  editionType,
   coords {
     lat,
     lng,
@@ -28,6 +30,10 @@ const SCENE_PROJECTION = groq`{
   treatment,
   acquisitionDate,
   processingNotes,
+  sourceTitle,
+  sourceUrl,
+  sourceCollection,
+  sourceCredit,
   "narrative": pt::text(narrative),
   // ?fm=webp lets Sanity negotiate WebP when the browser supports it
   // (Chrome, Firefox, Safari 14+) and falls back to JPEG elsewhere —
@@ -43,14 +49,16 @@ const SCENE_PROJECTION = groq`{
   publishedAt,
 }`;
 
+// Catalogue number is the canonical order: OA-001 leads, OA-NNN follows.
+// Lexicographic sort works because numbers are fixed-width (3+ digits).
 export const ALL_SCENES_QUERY = groq`
   *[_type == "scene" && defined(slug.current)]
-  | order(publishedAt desc) ${SCENE_PROJECTION}
+  | order(catalogueNumber asc) ${SCENE_PROJECTION}
 `;
 
 export const FEATURED_SCENES_QUERY = groq`
   *[_type == "scene" && featured == true && defined(slug.current)]
-  | order(publishedAt desc) ${SCENE_PROJECTION}
+  | order(catalogueNumber asc) ${SCENE_PROJECTION}
 `;
 
 export const SCENE_BY_SLUG_QUERY = groq`
@@ -80,5 +88,14 @@ export const SITE_SETTINGS_QUERY = groq`
     contactEmail,
     "socialLinks": coalesce(socialLinks[]{ platform, url }, []),
     "marketplaceLinks": coalesce(marketplaceLinks[]{ platform, url }, []),
+  }
+`;
+
+export const CURATION_SESSION_QUERY = groq`
+  *[_id == "curationSession"][0]{
+    startingNumber,
+    "picks": coalesce(picks, []),
+    updatedAt,
+    updatedBy,
   }
 `;
