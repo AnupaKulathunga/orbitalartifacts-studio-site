@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, Fraunces, JetBrains_Mono } from "next/font/google";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -25,7 +26,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://orbitalartifacts.shop"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Orbital Artifacts — Earth data, reimagined as art.",
     template: "%s · Orbital Artifacts",
