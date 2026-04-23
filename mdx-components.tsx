@@ -41,7 +41,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-rust-deep underline-offset-4 transition-opacity hover:opacity-75 hover:underline"
+            className="text-rust-deep underline underline-offset-4 decoration-rust-deep/40 transition-opacity hover:opacity-75 hover:decoration-rust-deep"
             {...props}
           >
             {children}
