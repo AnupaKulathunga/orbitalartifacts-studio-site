@@ -17,8 +17,10 @@ export default async function OGImage({
   const fonts = await loadOgFonts();
 
   // Sanity CDN URL → fetch at bigger size so the OG image is sharp.
+  // Satori (the renderer behind ImageResponse) can't ingest WebP — strip
+  // any query the display pipeline added and request JPEG explicitly.
   const heroUrl = scene?.imageUrl
-    ? `${scene.imageUrl}${scene.imageUrl.includes("?") ? "&" : "?"}w=1600&q=85&fit=clip`
+    ? `${scene.imageUrl.split("?")[0]}?w=1600&q=85&fit=clip&fm=jpg`
     : null;
 
   return new ImageResponse(

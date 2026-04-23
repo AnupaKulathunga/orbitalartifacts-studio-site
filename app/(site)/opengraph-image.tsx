@@ -11,8 +11,10 @@ export default async function OGImage() {
   const [hero] = await getFeaturedScenes(1);
   const fonts = await loadOgFonts();
 
+  // Satori (the renderer behind ImageResponse) can't ingest WebP — strip
+  // any query the display pipeline added and request JPEG explicitly.
   const heroUrl = hero?.imageUrl
-    ? `${hero.imageUrl}${hero.imageUrl.includes("?") ? "&" : "?"}w=1600&q=85&fit=clip`
+    ? `${hero.imageUrl.split("?")[0]}?w=1600&q=85&fit=clip&fm=jpg`
     : null;
 
   return new ImageResponse(
