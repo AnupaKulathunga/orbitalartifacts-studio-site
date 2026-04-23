@@ -113,7 +113,7 @@ export default async function ScenePage({ params }: { params: Params }) {
                 Not yet in the shop.{" "}
                 <Link
                   href="/contact"
-                  className="text-rust transition-opacity hover:opacity-75"
+                  className="text-rust-deep transition-opacity hover:opacity-75"
                 >
                   Get in touch →
                 </Link>{" "}

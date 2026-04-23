@@ -85,7 +85,7 @@ export default async function AboutPage() {
               isn&rsquo;t in the catalogue yet,{" "}
               <Link
                 href="/contact"
-                className="text-rust transition-opacity hover:opacity-75"
+                className="text-rust-deep transition-opacity hover:opacity-75"
               >
                 commission one →
               </Link>
