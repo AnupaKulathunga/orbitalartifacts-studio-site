@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MetaStrip } from "@/components/brand/MetaStrip";
 import { HeroRotator } from "@/components/home/HeroRotator";
+import { HeadlineReveal } from "@/components/motion/HeadlineReveal";
 import type { Scene } from "@/lib/scenes";
 
 type HeroProps = {
@@ -29,11 +30,13 @@ export function Hero({ scenes }: HeroProps) {
             items={["Orbital Artifacts", "Satellite Imagery · Art Prints"]}
           />
 
-          <h1 className="mt-10 font-serif text-[2.75rem] leading-[1.02] tracking-[-0.01em] text-ink sm:text-6xl lg:text-[5.25rem]">
-            Earth data,
-            <br />
-            <span className="italic text-rust">reimagined as art.</span>
-          </h1>
+          <HeadlineReveal
+            className="mt-10 font-serif text-[2.75rem] leading-[1.02] tracking-[-0.01em] text-ink sm:text-6xl lg:text-[5.25rem]"
+            lines={[
+              { text: "Earth data," },
+              { text: "reimagined as art.", className: "italic text-rust" },
+            ]}
+          />
 
           <p className="mt-8 max-w-md font-sans text-base leading-[1.6] text-ink-2">
             A curated archive of Earth, as seen from orbit. Every piece is a
