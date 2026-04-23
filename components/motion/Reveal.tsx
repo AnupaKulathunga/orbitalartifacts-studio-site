@@ -37,8 +37,12 @@ export function Reveal({
   const reduce = useReducedMotion();
   const inView = useInView(ref, {
     once: true,
-    amount: 0.15,
-    margin: "0px 0px -10% 0px",
+    // Fire when the top of the element has crossed roughly 1/3 of the
+    // viewport from the bottom — the element is clearly on-screen when
+    // the fade starts, so the motion is actually noticeable rather than
+    // already-completed by the time it's read.
+    amount: 0,
+    margin: "0px 0px -33% 0px",
   });
 
   const visible = reduce || inView;
