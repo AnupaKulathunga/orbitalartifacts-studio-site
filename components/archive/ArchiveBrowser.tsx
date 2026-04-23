@@ -125,7 +125,7 @@ export function ArchiveBrowser({ scenes }: ArchiveBrowserProps) {
                   exit={reduce ? undefined : { opacity: 0, scale: 0.98 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
                 >
-                  <SceneCard scene={scene} priority={i < 3} />
+                  <SceneCard scene={scene} priority={i < 3} titleAs="h2" />
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -153,7 +153,7 @@ function FilterSelect({ label, value, onChange, options }: FilterSelectProps) {
         "text-muted",
       )}
     >
-      <span aria-hidden>{label}</span>
+      <span>{label}</span>
       <span className="relative">
         <select
           id={id}
@@ -194,7 +194,7 @@ function EmptyState({ onReset }: EmptyStateProps) {
       <button
         type="button"
         onClick={onReset}
-        className="font-mono text-[11px] uppercase tracking-[0.22em] text-rust transition-opacity hover:opacity-75"
+        className="font-mono text-[11px] uppercase tracking-[0.22em] text-rust-deep transition-opacity hover:opacity-75"
       >
         Reset filters →
       </button>

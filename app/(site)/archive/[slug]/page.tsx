@@ -139,7 +139,7 @@ export default async function ScenePage({ params }: { params: Params }) {
                       </span>
                       <span
                         aria-hidden
-                        className="font-mono text-sm text-rust transition-transform group-hover:translate-x-0.5"
+                        className="font-mono text-sm text-rust-deep transition-transform group-hover:translate-x-0.5"
                       >
                         →
                       </span>
@@ -159,7 +159,7 @@ export default async function ScenePage({ params }: { params: Params }) {
       >
         <Link
           href="/archive"
-          className="font-mono text-[11px] uppercase tracking-[0.22em] text-rust transition-opacity hover:opacity-75"
+          className="font-mono text-[11px] uppercase tracking-[0.22em] text-rust-deep transition-opacity hover:opacity-75"
         >
           ← Back to archive
         </Link>

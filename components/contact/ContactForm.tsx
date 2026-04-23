@@ -87,7 +87,7 @@ export function ContactForm({ accessKey }: ContactFormProps) {
   if (status.kind === "success") {
     return (
       <div className="mt-12 border border-rust/40 bg-paper-2/60 p-8">
-        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-rust">
+        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-rust-deep">
           ◉ Received
         </p>
         <p className="mt-4 font-serif text-xl italic leading-[1.4] text-ink sm:text-2xl">
@@ -97,7 +97,7 @@ export function ContactForm({ accessKey }: ContactFormProps) {
         <button
           type="button"
           onClick={() => setStatus({ kind: "idle" })}
-          className="mt-8 font-mono text-[11px] uppercase tracking-[0.22em] text-rust transition-opacity hover:opacity-75"
+          className="mt-8 font-mono text-[11px] uppercase tracking-[0.22em] text-rust-deep transition-opacity hover:opacity-75"
         >
           Send another →
         </button>
@@ -190,7 +190,7 @@ export function ContactForm({ accessKey }: ContactFormProps) {
         {status.kind === "error" ? (
           <p
             role="alert"
-            className="font-mono text-[11px] uppercase tracking-[0.22em] text-rust"
+            className="font-mono text-[11px] uppercase tracking-[0.22em] text-rust-deep"
           >
             {status.message}
           </p>

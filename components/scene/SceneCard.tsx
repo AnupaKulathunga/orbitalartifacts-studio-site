@@ -8,6 +8,10 @@ type SceneCardProps = {
   scene: Scene;
   priority?: boolean;
   className?: string;
+  /** Heading level for the tile title — defaults to h3 for nesting under
+   *  a section h2 (e.g. the homepage featured strip). Archive passes "h2"
+   *  so the document outline stays in order beneath its h1. */
+  titleAs?: "h2" | "h3";
 };
 
 /**
@@ -15,7 +19,12 @@ type SceneCardProps = {
  * and the home-page featured strip. Hover scales the image by 1.02 and
  * reveals a rust inset border per §6.2.
  */
-export function SceneCard({ scene, priority, className }: SceneCardProps) {
+export function SceneCard({
+  scene,
+  priority,
+  className,
+  titleAs: TitleTag = "h3",
+}: SceneCardProps) {
   return (
     <Link
       href={`/archive/${scene.slug}`}
@@ -34,9 +43,9 @@ export function SceneCard({ scene, priority, className }: SceneCardProps) {
 
       <div className="mt-4 flex items-start justify-between gap-4">
         <div>
-          <h3 className="font-serif text-[19px] leading-tight text-ink">
+          <TitleTag className="font-serif text-[19px] leading-tight text-ink">
             {scene.title}
-          </h3>
+          </TitleTag>
           <p className="mt-0.5 font-sans text-xs text-muted">
             {scene.subtitle}
           </p>

@@ -25,7 +25,7 @@ export function FeaturedStrip({ scenes }: FeaturedStripProps) {
           </div>
           <Link
             href="/archive"
-            className="font-mono text-[11px] uppercase tracking-[0.22em] text-rust transition-opacity hover:opacity-75"
+            className="font-mono text-[11px] uppercase tracking-[0.22em] text-rust-deep transition-opacity hover:opacity-75"
           >
             See all &rarr;
           </Link>

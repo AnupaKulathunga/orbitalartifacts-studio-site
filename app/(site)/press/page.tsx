@@ -67,7 +67,7 @@ function PressRow({ entry }: { entry: PressEntry }) {
         </span>
 
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-rust">
+          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-rust-deep">
             {entry.publication}
           </p>
           <h2 className="mt-2 font-serif text-xl text-ink transition-colors group-hover:text-rust sm:text-2xl">
@@ -83,7 +83,7 @@ function PressRow({ entry }: { entry: PressEntry }) {
 
         <span
           aria-hidden
-          className="font-mono text-sm text-rust transition-transform group-hover:translate-x-0.5"
+          className="font-mono text-sm text-rust-deep transition-transform group-hover:translate-x-0.5"
         >
           ↗
         </span>

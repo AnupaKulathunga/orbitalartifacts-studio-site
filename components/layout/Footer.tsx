@@ -44,7 +44,7 @@ export async function Footer() {
           {settings.marketplaceLinks.length === 0 ? (
             <FooterItem>
               <span
-                className="font-sans text-sm text-muted/60"
+                className="font-sans text-sm text-muted"
                 title="Coming soon"
               >
                 Coming soon
@@ -63,7 +63,7 @@ export async function Footer() {
           {settings.socialLinks.length === 0 ? (
             <FooterItem>
               <span
-                className="font-sans text-sm text-muted/60"
+                className="font-sans text-sm text-muted"
                 title="Coming soon"
               >
                 Coming soon

@@ -40,6 +40,7 @@ export default async function AboutPage() {
                 alt="Orbital Artifacts studio mark"
                 fill
                 sizes="(min-width: 640px) 280px, 100vw"
+                priority
                 className="object-cover"
               />
             </div>
@@ -126,7 +127,7 @@ function ElsewhereColumn({
 }) {
   return (
     <div>
-      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-rust">
+      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-rust-deep">
         {title}
       </p>
       {items.length === 0 ? (

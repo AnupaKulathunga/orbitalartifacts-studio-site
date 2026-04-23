@@ -32,7 +32,7 @@ export default function ProcessPage() {
       <div className="mt-24 border-t border-sand/30 pt-10">
         <Link
           href="/archive"
-          className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-rust transition-opacity hover:opacity-75"
+          className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-rust-deep transition-opacity hover:opacity-75"
         >
           See the archive
           <span aria-hidden>→</span>

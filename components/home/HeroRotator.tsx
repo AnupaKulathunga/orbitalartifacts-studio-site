@@ -91,9 +91,10 @@ export function HeroRotator({ scenes }: HeroRotatorProps) {
           <span>{current.coords.formatted}</span>
         </div>
 
-        {/* Tiny progress dots so users can see it's a gallery */}
+        {/* Tiny progress dots — visually 1px tall but each button gets a
+            24px hit area (padding) so touch targets meet WCAG AA size. */}
         {scenes.length > 1 ? (
-          <div className="mt-3 flex items-center justify-end gap-1.5">
+          <div className="mt-2 flex items-center justify-end">
             {scenes.map((scene, i) => (
               <button
                 key={scene.slug}
@@ -101,16 +102,21 @@ export function HeroRotator({ scenes }: HeroRotatorProps) {
                 onClick={() => setIndex(i)}
                 aria-label={`Show ${scene.title}`}
                 aria-current={i === index ? "true" : undefined}
-                className="h-1 transition-all"
-                style={{
-                  width: i === index ? 18 : 6,
-                  backgroundColor:
-                    i === index
-                      ? "var(--color-rust)"
-                      : "var(--color-muted)",
-                  opacity: i === index ? 1 : 0.4,
-                }}
-              />
+                className="flex h-6 items-center justify-center px-1.5"
+              >
+                <span
+                  aria-hidden
+                  className="block h-1 transition-all"
+                  style={{
+                    width: i === index ? 18 : 6,
+                    backgroundColor:
+                      i === index
+                        ? "var(--color-rust)"
+                        : "var(--color-muted)",
+                    opacity: i === index ? 1 : 0.4,
+                  }}
+                />
+              </button>
             ))}
           </div>
         ) : null}

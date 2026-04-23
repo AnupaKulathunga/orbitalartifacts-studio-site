@@ -12,6 +12,10 @@
   --color-ink-2: #2b2a26;
   --color-muted: #5a5348;
   --color-rust: #c94f2a;
+  /* Darker rust for small (≤12px) text so 4.5:1 contrast holds against
+     the paper background — used on mono "→" nav links. Large rust italic
+     type can stay on the brand rust above. */
+  --color-rust-deep: #a53b1c;
   --color-sand: #c9a96e;
 
   /* Font families — the actual font files are loaded via next/font in

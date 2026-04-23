@@ -56,7 +56,7 @@ export function AboutTeaser() {
           </p>
           <Link
             href="/about"
-            className="mt-10 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-rust transition-opacity hover:opacity-75"
+            className="mt-10 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-rust-deep transition-opacity hover:opacity-75"
           >
             Read the story
             <span aria-hidden>→</span>

@@ -29,7 +29,10 @@ const SCENE_PROJECTION = groq`{
   acquisitionDate,
   processingNotes,
   "narrative": pt::text(narrative),
-  "imageUrl": hero.asset->url,
+  // ?fm=webp lets Sanity negotiate WebP when the browser supports it
+  // (Chrome, Firefox, Safari 14+) and falls back to JPEG elsewhere —
+  // saves ~30% bandwidth on the hero grid with no code change downstream.
+  "imageUrl": hero.asset->url + "?fm=webp",
   "availability": coalesce(availability[]{
     platform,
     url,
