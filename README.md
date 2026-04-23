@@ -8,82 +8,179 @@ Spec-of-record: [`CLAUDE_CODE_SPEC.md`](./CLAUDE_CODE_SPEC.md).
 
 ## Stack
 
-- **Next.js 15** (App Router) · **TypeScript** (strict)
+- **Next.js 15** (App Router) · **TypeScript** (strict) · **React 19**
 - **Tailwind CSS v4** — design tokens live in `app/globals.css` via `@theme`
-- **Sanity v3** for scenes / press / site settings (embedded Studio under `/studio`)
-- **MDX** for `/about` and `/process` long-form copy
-- **Motion** for tasteful reveals (added in M8)
-- Deployed on **Vercel**, domain `orbitalartifacts.shop`
+- **Sanity v4** for scenes / press / site settings (embedded Studio at `/studio`)
+- **MDX** for `/process` long-form copy (`content/process.mdx`)
+- **Motion** for scroll reveals + archive grid layout animations
+- **Web3Forms** for the contact form (free tier, client-side submit)
+- **next/og** for per-scene OpenGraph images (fonts from fontsource CDN)
+- Deploys on **Vercel**
 
-## Getting started
+---
+
+## Local setup
 
 ```bash
 npm install
-cp .env.local.example .env.local   # fill in keys as they become available
+cp .env.local.example .env.local   # fill in keys (see next section)
 npm run dev                        # http://localhost:3000
 ```
 
+### Environment variables
+
+Create `.env.local` from `.env.local.example`. Three that matter:
+
+| Variable | Required | Where to get it |
+|---|---|---|
+| `NEXT_PUBLIC_SANITY_PROJECT_ID` | yes | [sanity.io/manage](https://www.sanity.io/manage) → create project, copy ID |
+| `NEXT_PUBLIC_SANITY_DATASET` | yes | Default `production` — leave as-is unless you know why |
+| `SANITY_API_TOKEN` | only for `npm run seed:sanity` | sanity.io/manage → API → Tokens (Editor role) |
+| `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` | for the contact form | [web3forms.com](https://web3forms.com) — paste your email, copy the key. The NEXT_PUBLIC_ prefix is intentional: Web3Forms' free tier requires a browser-side submit, and the key is an account identifier, not a secret |
+| `NEXT_PUBLIC_SITE_URL` | only for non-production | Overrides the sitemap / robots / JSON-LD canonical URL (defaults to `https://orbitalartifacts.shop`) |
+
+### First-time Sanity setup
+
+1. Visit `/studio` in the dev server and log in (Google or GitHub) — this registers your user with the project.
+2. At [sanity.io/manage](https://www.sanity.io/manage), open your project → **API → CORS Origins** → add:
+   - `http://localhost:3000` (check **Allow credentials**)
+   - your Vercel production URL (check **Allow credentials**)
+3. Optional: run `npm run seed:sanity` to upload the 8 starter scenes from `lib/scenes.ts` into Sanity with hero images. The seed script is idempotent — re-running it replaces (not duplicates) existing docs by slug.
+
+---
+
 ## Scripts
 
-| Script | What it does |
+| Script | Purpose |
 |---|---|
-| `npm run dev` | Start Next dev server |
+| `npm run dev` | Next dev server, `http://localhost:3000` |
 | `npm run build` | Production build |
-| `npm run start` | Run production build locally |
-| `npm run lint` | ESLint |
-| `npm run typecheck` | `tsc --noEmit` |
+| `npm run start` | Serve the production build locally |
+| `npm run lint` | ESLint (Next's default config) |
+| `npm run typecheck` | `tsc --noEmit` (no emit, just check) |
+| `npm run seed:sanity` | Upload `SEED_SCENES` into your Sanity dataset (one-time) |
 
-## Build milestones
+---
 
-Scaffolded in milestones per the spec's §14 build order. Current state: **M3 — home page complete.**
+## Editing content
 
-- [x] **M1** — Next.js + TypeScript + Tailwind v4 scaffold, design tokens, route stubs
-- [x] **M2** — Fonts, shared Header / Footer, `SignalRings` / `MetaStrip` / `Logo` / `FilmGrain` components
-- [x] **M3** — Home page (static seed data)
-- [ ] **M4** — Archive + scene detail (static seed data)
-- [ ] **M5** — Sanity Studio with schemas per §9
-- [ ] **M6** — Wire Sanity queries, replace static data
-- [ ] **M7** — About / Process / Press / Contact pages
-- [ ] **M8** — Motion reveals
-- [ ] **M9** — OG images, sitemap, robots, JSON-LD
-- [ ] **M10** — Perf / Lighthouse pass + final README polish
+After Sanity is wired up and seeded, all content lives in the Studio:
 
-## Owner TODO checklist
+- **Scenes** (`/studio` → Scenes) — title, slug, coords, sensor, band combo, narrative, hero image, marketplace links. Toggle `featured` to include a scene in the homepage rotator.
+- **Press** (`/studio` → Press) — entries appear on `/press`, reverse-chronological.
+- **Site settings** (`/studio` → Site settings) — tagline, origin question, socials, shop-level marketplaces, contact email.
 
-Things **Anupa** needs to supply before launch. Each corresponds to a `// TODO(owner):` in the code.
+Click **Publish** when done. Pages use ISR with a 60-second revalidate — your edits show up on the live site within a minute.
 
-- [ ] **Sanity project ID** — create a free project at [sanity.io](https://sanity.io) and paste the ID into `.env.local` as `NEXT_PUBLIC_SANITY_PROJECT_ID`
-- [ ] **Web3Forms access key** — grab one at [web3forms.com](https://web3forms.com) (no account needed) and set `WEB3FORMS_ACCESS_KEY`
-- [ ] **Scene narratives** (2–3 sentences per scene) — editable in Sanity Studio once M5 is live
-- [ ] **Marketplace listing URLs** (Etsy / Redbubble / Teespring per scene) — editable in Sanity
-- [ ] **About & Process copy** — edit `content/about.mdx` and `content/process.mdx` directly
-- [ ] **Social handles** — Instagram / TikTok / Pinterest, set in Sanity `siteSettings`
-- [ ] **Portrait photo** (optional) — drop into `public/brand/portrait.jpg` if/when available; `/about` falls back to the OA mark otherwise
+Prose that *doesn't* live in Sanity:
+- **Process** article — `content/process.mdx` (6 sections per spec §6.4; edit as markdown)
+- **About** bio — currently inline prose in `app/(site)/about/page.tsx` (swap the `<Image>` src to your portrait when available)
 
-## Brand assets
+---
 
-Source files for the Signal identity live in `public/brand/`:
+## Deployment (Vercel)
 
-- `banner-hero.png` — primary 3360×840 banner
-- `banner-1200x300.png`, `banner-mini.png` — smaller banner crops
-- `shop-icon.png` — 500×500 shop avatar
-- `logo-horizontal.png`, `logo-vertical.png` — wordmark lockups
-- `wordmark-on-light.png` / `wordmark-on-dark.png` — dark/light wordmark variants
+1. Push this repo to GitHub.
+2. At [vercel.com/new](https://vercel.com/new), import the repo — Vercel auto-detects Next.js.
+3. **Environment Variables** tab — paste each of the keys from your `.env.local` (except `NEXT_PUBLIC_SITE_URL`, which only matters for staging).
+4. Deploy. You'll get a `*.vercel.app` URL.
+5. **Sanity → CORS Origins** — add your `*.vercel.app` URL (and the custom domain below) with **Allow credentials** ticked, otherwise the embedded Studio at `/studio` won't be able to authenticate.
+6. **Domains** — add `orbitalartifacts.shop` in Vercel → Settings → Domains. Point DNS apex records to Vercel per their instructions.
+7. Add the custom domain to Sanity CORS too.
+
+Every `git push` to the main branch redeploys automatically.
+
+---
+
+## Performance + SEO
+
+Lighthouse (desktop, production build):
+
+| Route | Perf | A11y | BP | SEO |
+|---|---|---|---|---|
+| `/` | 100 | 100 | 100 | 100 |
+| `/archive` | 99 | 100 | 100 | 100 |
+| `/archive/[slug]` | 100 | 100 | 100 | 100 |
+| `/about` | 99 | 100 | 100 | 100 |
+| `/process` | 100 | 100 | 100 | 100 |
+
+Built-in:
+- **Sitemap** at `/sitemap.xml` (auto-includes every scene slug)
+- **robots.txt** at `/robots.txt` (allow all, disallow `/studio`)
+- **JSON-LD `VisualArtwork`** on every scene page with creator, coords, image, dates
+- **OG images** at `/opengraph-image` and `/archive/[slug]/opengraph-image` — 1200×630 with hero + wordmark + coords in Fraunces/JetBrains Mono
+- **ISR 60s** — Sanity edits propagate within a minute, no deploy required
+
+---
+
+## Brand
+
+Design tokens (`app/globals.css`):
+- `--color-paper` `#ebe5d6` · `--color-paper-2` `#e8e3d8` — warm cream backgrounds
+- `--color-ink` `#0a0a0a` · `--color-ink-2` `#2b2a26` — body text
+- `--color-muted` `#5a5348` — secondary text
+- `--color-rust` `#c94f2a` — italic accents (large type only)
+- `--color-rust-deep` `#a53b1c` — 4.5:1 darker rust for small body links (WCAG AA)
+- `--color-sand` `#c9a96e` — borders and dot separators
+
+Assets in `public/brand/`:
+- `logo-horizontal.png` / `logo-vertical.png` — wordmark lockups
 - `mark-on-light.png` / `mark-on-dark.png` — tight mark variants
-- `app/icon.png` — favicon (uses the tight mark)
+- `wordmark-on-light.png` / `wordmark-on-dark.png`
+- `banner-hero.png` / `banner-1200x300.png` / `banner-mini.png`
+- `shop-icon.png` — 500×500 avatar, used as portrait placeholder on `/about`
+- `app/icon.png` — favicon
 
-An SVG version of the mark will be traced in M2 so the logo can live inline in the header and inherit `currentColor`.
+---
 
-## Deployment
+## Project layout
 
-1. Push this repo to GitHub
-2. Import at [vercel.com/new](https://vercel.com/new)
-3. Add the env vars from your local `.env.local` to the Vercel project
-4. Add custom domain `orbitalartifacts.shop` in Vercel → Domains
-5. Point DNS apex records to Vercel per their instructions
+```
+app/
+  (site)/            ← public site routes (share Header/Footer via layout)
+    page.tsx         ← /
+    archive/
+      page.tsx       ← /archive (client-side filter grid)
+      [slug]/        ← /archive/<slug> + per-scene OG image
+    about/           ← /about (inline bio, TODO(owner): long-form)
+    process/         ← /process (pulls content/process.mdx)
+    press/           ← /press (Sanity-backed, empty-state ships naturally)
+    contact/         ← /contact (Web3Forms client submit)
+  studio/            ← embedded Sanity Studio (/studio/*)
+  sitemap.ts         ← dynamic sitemap.xml
+  robots.ts          ← dynamic robots.txt
+components/
+  brand/             ← Logo, MetaStrip, CornerBrackets, SignalRings, FilmGrain
+  home/              ← Hero, HeroRotator, FeaturedStrip, ProcessTeaser, AboutTeaser, OriginQuestion
+  layout/            ← Header, Footer
+  archive/           ← ArchiveBrowser (filters + grid)
+  scene/             ← SceneCard, SceneThumbnail, SceneJsonLd
+  motion/            ← Reveal (scroll), HeadlineReveal (mount stagger)
+  contact/           ← ContactForm
+content/
+  process.mdx        ← Process article
+sanity/
+  schemas/           ← scene, pressEntry, siteSettings, embedded objects
+  lib/               ← client, writeClient, image URL builder
+  queries.ts         ← GROQ projections
+  env.ts             ← env var loader
+scripts/
+  seed-sanity.ts     ← idempotent scene seeder
+lib/
+  scenes.ts          ← Scene type + Sanity-backed helpers + SEED_SCENES (seeder input)
+  siteConfig.ts      ← siteSettings loader + static fallback
+  press.ts           ← press entries loader
+  ogFonts.ts         ← TTF font loader for OG image generation
+  site.ts            ← canonical SITE_URL
+  utils.ts           ← cn() classname joiner
+mdx-components.tsx   ← brand typography mapping for MDX
+sanity.config.ts     ← Studio config (structure + plugins)
+```
+
+---
 
 ## What this site is NOT
 
-- Not a cart / storefront. No Stripe, no Shopify, no checkout logic.
-- Not dark-mode. Paper `#ebe5d6` background everywhere, by design.
-- Not a single-CTA landing page. It is a catalogue + studio story.
+- **Not a cart / storefront** — no Stripe, no Shopify, no checkout logic. All "buy" links route out to marketplaces.
+- **Not dark-mode** — paper `#ebe5d6` background everywhere, by design.
+- **Not a single-CTA landing page** — it's a catalogue + studio story.
