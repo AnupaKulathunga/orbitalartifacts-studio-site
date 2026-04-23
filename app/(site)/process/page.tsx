@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MetaStrip } from "@/components/brand/MetaStrip";
+import { Reveal } from "@/components/motion/Reveal";
 import Content from "@/content/process.mdx";
 
 export const metadata: Metadata = {
@@ -24,7 +25,9 @@ export default function ProcessPage() {
         pigment on cotton paper. Here&rsquo;s how.
       </p>
 
-      <Content />
+      <Reveal>
+        <Content />
+      </Reveal>
 
       <div className="mt-24 border-t border-sand/30 pt-10">
         <Link

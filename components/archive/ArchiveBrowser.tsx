@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useMemo, useState } from "react";
 import { SceneCard } from "@/components/scene/SceneCard";
 import type { Region, Scene, Sensor, Treatment } from "@/lib/scenes";
@@ -43,6 +44,7 @@ type ArchiveBrowserProps = {
 };
 
 export function ArchiveBrowser({ scenes }: ArchiveBrowserProps) {
+  const reduce = useReducedMotion();
   const [region, setRegion] = useState<RegionFilter>("All");
   const [sensor, setSensor] = useState<SensorFilter>("All");
   const [treatment, setTreatment] = useState<TreatmentFilter>("All");
@@ -109,15 +111,25 @@ export function ArchiveBrowser({ scenes }: ArchiveBrowserProps) {
             }}
           />
         ) : (
-          <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-            {filtered.map((scene, i) => (
-              <SceneCard
-                key={scene.slug}
-                scene={scene}
-                priority={i < 3}
-              />
-            ))}
-          </div>
+          <motion.div
+            layout={!reduce}
+            className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10"
+          >
+            <AnimatePresence mode="popLayout" initial={false}>
+              {filtered.map((scene, i) => (
+                <motion.div
+                  key={scene.slug}
+                  layout={!reduce}
+                  initial={reduce ? false : { opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={reduce ? undefined : { opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                >
+                  <SceneCard scene={scene} priority={i < 3} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
         )}
       </div>
     </>

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CornerBrackets } from "@/components/brand/CornerBrackets";
 import { MetaStrip } from "@/components/brand/MetaStrip";
+import { Reveal } from "@/components/motion/Reveal";
 import { getSiteSettings } from "@/lib/siteConfig";
 
 export const metadata: Metadata = {
@@ -30,7 +31,7 @@ export default async function AboutPage() {
         <span className="italic text-rust">Anupa Kulathunga.</span>
       </h1>
 
-      <div className="mt-14 flex flex-col gap-10 sm:flex-row sm:items-start">
+      <Reveal className="mt-14 flex flex-col gap-10 sm:flex-row sm:items-start">
         <div className="w-full max-w-[280px] shrink-0">
           <CornerBrackets size={14} inset={-6} color="var(--color-ink-2)">
             <div className="relative aspect-square w-full overflow-hidden bg-paper-2">
@@ -90,9 +91,9 @@ export default async function AboutPage() {
             </p>
           </div>
         </div>
-      </div>
+      </Reveal>
 
-      <section className="mt-20 border-t border-sand/30 pt-10">
+      <Reveal as="section" className="mt-20 border-t border-sand/30 pt-10">
         <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-muted">
           Elsewhere
         </p>
@@ -109,7 +110,7 @@ export default async function AboutPage() {
             items={settings.marketplaceLinks}
           />
         </div>
-      </section>
+      </Reveal>
     </article>
   );
 }

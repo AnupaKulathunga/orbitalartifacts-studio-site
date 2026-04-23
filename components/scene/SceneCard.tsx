@@ -23,12 +23,12 @@ export function SceneCard({ scene, priority, className }: SceneCardProps) {
       className={cn("group block", className)}
     >
       <div className="relative aspect-square w-full overflow-hidden bg-paper-2">
-        <div className="absolute inset-0 transition-transform duration-200 ease-out group-hover:scale-[1.02]">
+        <div className="absolute inset-0 transition-transform duration-150 ease-out group-hover:scale-[1.02]">
           <SceneThumbnail scene={scene} priority={priority} />
         </div>
         <div
           aria-hidden
-          className="absolute inset-0 border border-transparent transition-colors duration-200 group-hover:border-rust"
+          className="absolute inset-0 border border-transparent transition-colors duration-150 group-hover:border-rust"
         />
       </div>
 
