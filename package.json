@@ -18,6 +18,8 @@
     "@sanity/image-url": "^2.1.1",
     "@sanity/vision": "^4.22.0",
     "@types/mdx": "^2.0.13",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "motion": "^12.38.0",
     "next": "^15.1.0",
     "next-sanity": "^11.6.13",
