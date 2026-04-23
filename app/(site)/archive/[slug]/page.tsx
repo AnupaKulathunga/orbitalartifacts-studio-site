@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CornerBrackets } from "@/components/brand/CornerBrackets";
+import { SceneJsonLd } from "@/components/scene/SceneJsonLd";
 import { SceneThumbnail } from "@/components/scene/SceneThumbnail";
 import {
   getAllSceneSlugs,
@@ -41,6 +42,7 @@ export default async function ScenePage({ params }: { params: Params }) {
 
   return (
     <article className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+      <SceneJsonLd scene={scene} />
       <div className="grid gap-12 lg:grid-cols-[3fr_2fr] lg:gap-16">
         {/* LEFT — image + acquisition strip */}
         <div>
