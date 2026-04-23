@@ -69,8 +69,8 @@ export function Header() {
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "transition-colors hover:text-rust",
-                    active ? "text-rust" : "text-ink-2",
+                    "transition-colors hover:text-rust-deep",
+                    active ? "text-rust-deep" : "text-ink-2",
                   )}
                 >
                   {item.label}

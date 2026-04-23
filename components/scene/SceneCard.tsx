@@ -28,7 +28,6 @@ export function SceneCard({
   return (
     <Link
       href={`/archive/${scene.slug}`}
-      aria-label={`${scene.title}, ${scene.subtitle}`}
       className={cn("group block", className)}
     >
       <div className="relative aspect-square w-full overflow-hidden bg-paper-2">

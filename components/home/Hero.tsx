@@ -47,7 +47,7 @@ export function Hero({ scenes }: HeroProps) {
           <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4 font-mono text-[11px] uppercase tracking-[0.22em]">
             <Link
               href="/archive"
-              className="inline-flex items-center gap-2 text-rust transition-opacity hover:opacity-75"
+              className="inline-flex items-center gap-2 text-rust-deep transition-opacity hover:opacity-75"
             >
               Enter the archive
               <span aria-hidden>→</span>

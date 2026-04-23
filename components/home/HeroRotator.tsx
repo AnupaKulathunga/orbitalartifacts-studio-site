@@ -102,7 +102,7 @@ export function HeroRotator({ scenes }: HeroRotatorProps) {
                 onClick={() => setIndex(i)}
                 aria-label={`Show ${scene.title}`}
                 aria-current={i === index ? "true" : undefined}
-                className="flex h-6 items-center justify-center px-1.5"
+                className="flex h-6 min-w-6 items-center justify-center px-1.5"
               >
                 <span
                   aria-hidden
