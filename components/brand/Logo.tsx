@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -47,9 +48,8 @@ export function Logo({
   href,
   className,
 }: LogoProps) {
-  // eslint-disable-next-line @next/next/no-img-element
   const mark = (
-    <img
+    <Image
       src="/brand/mark-on-light.png"
       alt=""
       aria-hidden
@@ -78,12 +78,12 @@ export function Logo({
     const height = markSize;
     const width = Math.round(height * LOCKUP_ASPECT);
     body = (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
+      <Image
         src="/brand/logo-horizontal.png"
         alt="Orbital Artifacts"
         width={width}
         height={height}
+        priority
         className="shrink-0 select-none"
         style={{ width, height }}
       />
