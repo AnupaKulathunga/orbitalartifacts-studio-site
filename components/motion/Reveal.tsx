@@ -57,7 +57,7 @@ export function Reveal({
         transform: visible ? "none" : `translateY(${y}px)`,
         transition: reduce
           ? "none"
-          : `opacity 500ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}s, transform 500ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}s`,
+          : `opacity 800ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}s, transform 800ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}s`,
         willChange: visible ? undefined : "opacity, transform",
       }}
     >
