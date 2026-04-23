@@ -58,23 +58,60 @@ Create `.env.local` from `.env.local.example`. Three that matter:
 | `npm run start` | Serve the production build locally |
 | `npm run lint` | ESLint (Next's default config) |
 | `npm run typecheck` | `tsc --noEmit` (no emit, just check) |
-| `npm run seed:sanity` | Upload `SEED_SCENES` into your Sanity dataset (one-time) |
+| `npm run fetch:eaa` | Scrape the USGS Earth as Art gallery → `data/eaa-manifest.json` |
+| `npm run ingest:eaa` | Upload curated picks (`data/eaa-selections.json`) into Sanity |
 
 ---
 
+## Building the catalogue
+
+The scene catalogue is assembled in three steps: fetch the public USGS
+Earth as Art gallery, curate picks in a dev-only UI, then ingest to
+Sanity.
+
+1. **Fetch the EaA manifest.** `npm run fetch:eaa` scrapes all six EaA
+   collections from `www.usgs.gov/centers/eros/earth-art-{1..6}` and
+   writes `data/eaa-manifest.json` (~200 entries with title, narrative,
+   sensor, acquisition date, thumbnail URL, full-res JPG URL). Commit
+   the manifest.
+2. **Curate at `/curate`.** `npm run dev` + visit
+   [localhost:3000/curate](http://localhost:3000/curate). Click
+   thumbnails to pick (✓ = in, tap again = out). Drag tiles in the
+   PICKS tray at top to reorder. Keyboard: `/` focuses search, `⌘S`
+   force-saves. Picks auto-save to `data/eaa-selections.json` 1.5s
+   after the last change. The route is dev-only — `NODE_ENV=development`
+   gate — so it 404s in production.
+3. **Ingest.** `npm run ingest:eaa` (needs `SANITY_API_TOKEN` in
+   `.env.local`). Downloads each picked image, uploads to Sanity assets,
+   and creates a `scene` doc with `_id: scene-<slug>` so re-running is
+   idempotent. `--dry-run` logs what would happen without writing.
+
+After ingestion, scenes appear in `/studio → Scenes`, ordered by
+catalogue number. Re-run `ingest:eaa` any time you tweak the manifest
+or the selection order.
+
 ## Editing content
 
-After Sanity is wired up and seeded, all content lives in the Studio:
+All Sanity-backed content lives in `/studio`:
 
-- **Scenes** (`/studio` → Scenes) — title, slug, coords, sensor, band combo, narrative, hero image, marketplace links. Toggle `featured` to include a scene in the homepage rotator.
-- **Press** (`/studio` → Press) — entries appear on `/press`, reverse-chronological.
-- **Site settings** (`/studio` → Site settings) — tagline, origin question, socials, shop-level marketplaces, contact email.
+- **Scenes** — title, slug, catalogue number, source (Earth as Art vs.
+  Processed-by-Orbital-Artifacts), coords, sensor, narrative, hero
+  image, marketplace links. Toggle `featured` to include a scene in
+  the homepage rotator. `bandCombo`, `treatment`, and
+  `processingNotes` only appear for `Processed-by-Orbital-Artifacts`
+  entries; `sourceTitle` / `sourceUrl` / `sourceCollection` only
+  appear for `Earth as Art` entries.
+- **Press** — entries appear on `/press`, reverse-chronological.
+- **Site settings** — tagline, origin question, socials, shop-level
+  marketplaces, contact email.
 
-Click **Publish** when done. Pages use ISR with a 60-second revalidate — your edits show up on the live site within a minute.
+Click **Publish** when done. Pages use ISR with a 60-second revalidate
+— your edits show up on the live site within a minute.
 
 Prose that *doesn't* live in Sanity:
-- **Process** article — `content/process.mdx` (6 sections per spec §6.4; edit as markdown)
-- **About** bio — currently inline prose in `app/(site)/about/page.tsx` (swap the `<Image>` src to your portrait when available)
+- **Process** article — `content/process.mdx` (curation-first narrative;
+  edit as markdown)
+- **About** bio — currently inline prose in `app/(site)/about/page.tsx`
 
 ---
 

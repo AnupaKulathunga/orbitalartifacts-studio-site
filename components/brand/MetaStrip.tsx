@@ -1,7 +1,9 @@
 import { cn } from "@/lib/utils";
 
 type MetaStripProps = {
-  items: ReadonlyArray<string>;
+  // Accept undefined so callers can pass optional scene fields without
+  // pre-filtering — we drop empties inside the component.
+  items: ReadonlyArray<string | undefined | null | false>;
   align?: "left" | "center" | "right";
   /** Mark character before the first item, e.g. `◉`. Omit to hide. */
   marker?: string | false;
@@ -27,6 +29,8 @@ export function MetaStrip({
         ? "justify-end"
         : "justify-start";
 
+  const visible = items.filter((i): i is string => typeof i === "string" && i.length > 0);
+
   return (
     <div
       className={cn(
@@ -40,7 +44,7 @@ export function MetaStrip({
           {marker}
         </span>
       ) : null}
-      {items.map((item, i) => (
+      {visible.map((item, i) => (
         <span key={`${item}-${i}`} className="flex items-center gap-3">
           {i > 0 ? (
             <span aria-hidden className="text-sand">

@@ -57,7 +57,7 @@ export function SceneCard({
       <MetaStrip
         className="mt-2.5"
         marker={false}
-        items={[scene.region, scene.sensor, scene.coords.formatted]}
+        items={[scene.region, scene.sensor, scene.coords?.formatted]}
       />
     </Link>
   );

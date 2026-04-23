@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "seed:sanity": "node --env-file=.env.local --import tsx scripts/seed-sanity.ts"
+    "fetch:eaa": "node --import tsx scripts/fetch-eaa-manifest.ts",
+    "ingest:eaa": "node --env-file=.env.local --import tsx scripts/ingest-eaa.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",
@@ -29,6 +30,9 @@
     "styled-components": "^6.4.1"
   },
   "devDependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.9.0",
     "@types/react": "^19.0.0",

@@ -1,72 +1,69 @@
-## The data is public
+## Curation, not capture
 
-Every scene in this archive starts as free, open satellite data.
-[Sentinel-2](https://sentinels.copernicus.eu/web/sentinel/missions/sentinel-2)
-is a pair of satellites run by the European Space Agency as part of the
-Copernicus programme. [Landsat 8 and 9](https://landsat.gsfc.nasa.gov/)
-are a joint NASA / USGS mission going back to 1972 — the longest
-continuous Earth observation record there is.
-[ASTER](https://terra.nasa.gov/about/terra-instruments/aster) rides
-piggyback on NASA's Terra satellite and adds a thermal eye.
+Orbital Artifacts doesn't operate satellites. The work is slower and
+more ambivalent than that. Every print in this catalogue started as an
+image in someone else's archive — specifically, the U.S. Geological
+Survey's
+[Earth as Art](https://eros.usgs.gov/media-gallery/earth-as-art) series,
+a public-domain collection of Landsat, Terra, and ASTER views curated
+by EROS Center scientists over two decades.
 
-All of this data is yours, mine, anyone's — downloadable from
-[Copernicus Browser](https://browser.dataspace.copernicus.eu/) or
-[USGS EarthExplorer](https://earthexplorer.usgs.gov/) with a free
-account and a little patience. Orbital Artifacts doesn't own the
-imagery; the studio owns the framing, the composition, and the print.
+What the studio does is choose. What catches the eye. What sits next to
+what. Which sequence of forty images, pulled from the six hundred and
+fifty in the archive, tells a coherent story. Which ones earn a print.
 
-## Choosing a scene
+If that sounds like a small job, try it some afternoon. The archive is
+beautiful and overwhelming in the way only a public-good dataset can be
+— there's no algorithm ranking any of it, no "trending," no editorial
+line. Just image after image, each one a real place on a real day,
+waiting for someone to decide it matters.
 
-Not every place photographs well from 700km up.
+## What I look for
 
-Scenes get picked the way you'd pick a record to put on: slowly, with
-reasons. Sometimes it's a river I've read about; sometimes it's the
-chance alignment of snow and shadow at a specific moment in the year.
-Often it's a place that reveals something in false-color that you'd
-never see standing on the ground — the ghost of an old river channel, a
-plume of glacial meltwater, the exact shape of a pan of salt crystals.
+Not every place photographs well from 700 km up.
 
-## False-color
+The easy scenes — deserts that happen to look like abstract paintings,
+coastlines rendered in improbable blue — are everywhere in the Earth as
+Art archive, and most of them are already famous. Those aren't what I'm
+picking for.
 
-Satellites see more than we do. Where our eyes register three wavelengths
-of visible light (red, green, blue), a sensor like Landsat 8 OLI reads
-nine — from deep blue all the way out through shortwave infrared. The
-invisible wavelengths are where the interesting information lives:
-healthy vegetation lights up in near-infrared, water bodies vanish into
-near-black, iron-rich soils hum in shortwave infrared.
+The ones I keep are harder to explain: a scene where the colors feel
+*earned*, where the geometry of a river delta or the grain of a dune
+field carries some quiet weight that doesn't resolve into a single
+pretty idea. Often they're places I've read about; sometimes they're
+places I couldn't find on a map before and can't unsee after. The
+catalogue number on a print is just the order I picked them in.
 
-False-color imaging is the trick of taking those invisible wavelengths
-and mapping them onto the visible spectrum so your eyes can see them.
-It's not a filter or a stylization — it's a translation. The colors
-mean something. They're the best possible answer to the question
-*"what would this place look like if your eyes were tuned slightly
-differently?"*
+## False-color, explained
 
-Each scene's band combination is listed on its page. *Bands 7-6-4* is
-shortwave-infrared-2 on red, shortwave-infrared-1 on green, red on blue
-— a combination that makes geology pop. *Bands 4-3-2* is the natural
-view; *Bands 8-4-3* turns plant life scarlet.
+Most of the Earth as Art images are
+[false-color composites](https://earthobservatory.nasa.gov/features/FalseColor).
+That word *false* is misleading — the colors aren't invented, they're
+*translated*. Satellites see more wavelengths than your eyes do; when
+USGS scientists map invisible wavelengths (shortwave infrared, thermal)
+onto the visible spectrum, you see exactly what's there, just with the
+dial turned past red.
 
-## Composition
+That's why healthy vegetation sometimes shows up scarlet, or why an
+ostensible desert can bloom in turquoise. The colors mean something.
+They're the best possible answer to the question *"what would this
+place look like if my eyes were tuned slightly differently?"*
 
-The raw data arrives as individual grayscale TIFFs — one per band,
-often a gigabyte apiece. The workhorse is
-[SNAP](https://step.esa.int/main/toolboxes/snap/), a free desktop tool
-from ESA, originally built for scientists and gracefully honest about
-it.
+Each scene's sensor and acquisition date are listed on its page. When
+USGS has published the specific band combination, it's there too.
 
-The process, compressed:
+## Sequencing
 
-1. Pull the scene from Copernicus or EarthExplorer. Unzip. Stare at
-   the cloud cover forecast.
-2. In SNAP, stack the three chosen bands into a single RGB composite.
-3. Adjust histograms — a 99% linear stretch usually reveals structure
-   that linear-100% hides under blown highlights.
-4. Reproject to a geodetically honest coordinate system. Crop to the
-   frame that tells the story.
-5. Export as 16-bit TIFF for print, 8-bit JPEG for screen.
+A catalogue isn't a playlist but it rhymes with one. OA-010 leads
+because OA-010 is a good opening move — legible at a glance, slightly
+strange on a second look, ready to set a tone. Every number after that
+has to earn its place by contrast, adjacency, or repetition.
 
-None of this is fast. A single scene can take half a day.
+Some scenes are grouped because they share a sensor and a decade.
+Others because they share a shape — an estuary's fingerprint echoing a
+salt pan's; a volcanic caldera echoing an impact crater on the far side
+of the world. The cataloguing is the art, or as much of it as this
+studio claims.
 
 ## The frame
 
@@ -74,21 +71,40 @@ The last move is the one that turns a scientific composite into an
 artifact: the frame.
 
 Every print carries its own coordinates — latitude and longitude in
-degrees, printed in a restrained monospaced font at the lower-right
-of the mat. A tiny catalogue number sits at the lower-left, same as a
+degrees, printed in a restrained monospaced font at the lower-right of
+the mat. A tiny catalogue number sits at the lower-left, same as a
 gallery label. The idea is simple: this is a real place on a real day,
 and the frame tells you which one.
 
 No one needs the metadata to enjoy the image. But for the people who
-do look — who open a map and drop a pin, or who recognize their
+*do* look — who open a map and drop a pin, or who recognize their
 hometown from the shape of a river bend — that restraint rewards them.
+
+## Attribution, and a note on future work
+
+The imagery belongs to the public. Landsat data is in the U.S. public
+domain by statute; Copernicus Sentinel data carries a "free, full and
+open" license. The USGS Earth as Art series is produced by federal
+scientists as part of their official duties and released under the
+same public-domain terms. The studio credits the source on every scene
+page and in the footer of this site.
+
+What *is* the studio's — and what a buyer is paying for — is the edit:
+the selection, the sequencing, the catalogue, the frame, the paper,
+the ink. A curator's authorship, not a photographer's.
+
+Originally-processed work, made from raw scene data in the studio
+rather than curated from the USGS archive, is planned but not yet on
+this catalogue. When those scenes ship, they'll carry the studio's
+own band choices and a separate
+<a href="/process#processing">processing note</a>. Until then, every
+print here is a curated edit — small task, slow work.
 
 ## The print
 
 The files are printed on archival matte cotton paper, 320gsm, with
 pigment inks rated for over a century of light resistance. Available
 sizes and frame options vary by scene; see each scene's page for what's
-in stock, or
-<a href="/contact">commission one</a>.
+in stock, or <a href="/contact">commission one</a>.
 
 Orbital Artifacts ships worldwide from Sri Lanka.

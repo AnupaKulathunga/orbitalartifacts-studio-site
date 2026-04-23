@@ -80,10 +80,13 @@ export async function Footer() {
       </div>
 
       <div className="border-t border-sand/30">
-        <p className="mx-auto max-w-6xl px-6 py-6 font-mono text-[11px] uppercase tracking-[0.22em] text-muted">
-          © {year} Orbital Artifacts · All satellite data used under
-          open-access licenses (Copernicus · USGS)
-        </p>
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 py-6 font-mono text-[11px] uppercase tracking-[0.22em] text-muted">
+          <p>© {year} Orbital Artifacts</p>
+          <p className="max-w-xl">
+            Imagery curated from Earth as Art, courtesy of the U.S. Geological
+            Survey. Contains modified Copernicus Sentinel data.
+          </p>
+        </div>
       </div>
     </footer>
   );

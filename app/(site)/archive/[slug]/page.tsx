@@ -8,7 +8,34 @@ import {
   getAllSceneSlugs,
   getSceneBySlug,
   getSceneNeighbours,
+  type Scene,
 } from "@/lib/scenes";
+
+/**
+ * Under-image metadata strip. Only renders fields the scene actually has —
+ * EaA entries typically have acquisition date + sensor; processed scenes
+ * add band combo + processing notes.
+ */
+function AcquisitionStrip({ scene }: { scene: Scene }) {
+  const bits = [
+    scene.acquisitionDate ? `Acquired ${scene.acquisitionDate}` : null,
+    scene.sensor,
+    scene.bandCombo,
+    scene.processingNotes,
+  ].filter(Boolean);
+  if (bits.length === 0) return null;
+  return (
+    <p className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.22em] text-muted">
+      <span aria-hidden className="text-rust">◉</span>
+      {bits.map((b, i) => (
+        <span key={i} className="flex items-center gap-3">
+          {i > 0 ? <span aria-hidden className="text-sand">·</span> : null}
+          <span>{b}</span>
+        </span>
+      ))}
+    </p>
+  );
+}
 
 type Params = Promise<{ slug: string }>;
 
@@ -27,9 +54,15 @@ export async function generateMetadata({
   const { slug } = await params;
   const scene = await getSceneBySlug(slug);
   if (!scene) return { title: "Scene not found" };
+  const descBits = [
+    scene.catalogueNumber,
+    scene.sensor,
+    scene.bandCombo,
+    scene.coords?.formatted,
+  ].filter(Boolean);
   return {
-    title: `${scene.title} — ${scene.subtitle}`,
-    description: `${scene.catalogueNumber} · ${scene.sensor} · ${scene.bandCombo} · ${scene.coords.formatted}`,
+    title: scene.subtitle ? `${scene.title} — ${scene.subtitle}` : scene.title,
+    description: descBits.join(" · "),
   };
 }
 
@@ -56,20 +89,7 @@ export default async function ScenePage({ params }: { params: Params }) {
             </div>
           </CornerBrackets>
 
-          <p className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.22em] text-muted">
-            <span aria-hidden className="text-rust">◉</span>
-            <span>Acquired {scene.acquisitionDate}</span>
-            <span aria-hidden className="text-sand">·</span>
-            <span>{scene.sensor}</span>
-            <span aria-hidden className="text-sand">·</span>
-            <span>{scene.bandCombo}</span>
-            {scene.processingNotes ? (
-              <>
-                <span aria-hidden className="text-sand">·</span>
-                <span>{scene.processingNotes}</span>
-              </>
-            ) : null}
-          </p>
+          <AcquisitionStrip scene={scene} />
         </div>
 
         {/* RIGHT — sticky gallery-label */}
@@ -87,19 +107,56 @@ export default async function ScenePage({ params }: { params: Params }) {
           </p>
 
           <div className="mt-8 space-y-1 font-mono text-[12px] uppercase tracking-[0.2em] text-ink-2">
-            <p>{scene.coords.formatted}</p>
+            {scene.coords?.formatted ? <p>{scene.coords.formatted}</p> : null}
             <p>
-              {scene.sensor} · {scene.bandCombo}
+              {[scene.sensor, scene.bandCombo].filter(Boolean).join(" · ")}
             </p>
-            <p>Acquired {scene.acquisitionDate}</p>
-            <p className="text-muted">
-              {scene.region} · {scene.treatment}
-            </p>
+            {scene.acquisitionDate ? <p>Acquired {scene.acquisitionDate}</p> : null}
+            {scene.region || scene.treatment ? (
+              <p className="text-muted">
+                {[scene.region, scene.treatment].filter(Boolean).join(" · ")}
+              </p>
+            ) : null}
+            {scene.source === "earth-as-art" && scene.sourceCredit ? (
+              <p className="text-muted">{scene.sourceCredit}</p>
+            ) : null}
           </div>
 
           <p className="mt-10 max-w-md font-sans text-base leading-[1.7] text-ink-2">
             {scene.narrative}
           </p>
+
+          {scene.source === "earth-as-art" ? (
+            <aside className="mt-8 max-w-md border-l-2 border-sand/60 pl-4 font-sans text-sm leading-[1.65] text-ink-2">
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted">
+                Curated from
+              </p>
+              <p className="mt-1">
+                U.S. Geological Survey —{" "}
+                {scene.sourceUrl ? (
+                  <a
+                    href={scene.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-rust-deep underline underline-offset-4 decoration-rust-deep/40 transition-opacity hover:opacity-75 hover:decoration-rust-deep"
+                  >
+                    Earth as Art
+                    {scene.sourceCollection ? ` ${scene.sourceCollection}` : ""}
+                    {scene.sourceTitle && scene.sourceTitle !== scene.title
+                      ? `, “${scene.sourceTitle}”`
+                      : ""}
+                  </a>
+                ) : (
+                  <span>
+                    Earth as Art
+                    {scene.sourceCollection ? ` ${scene.sourceCollection}` : ""}
+                  </span>
+                )}
+                . Imagery in the public domain; the edit and sequencing are
+                Orbital Artifacts&rsquo;.
+              </p>
+            </aside>
+          ) : null}
 
           <hr className="mt-10 max-w-md border-t border-sand/40" />
 

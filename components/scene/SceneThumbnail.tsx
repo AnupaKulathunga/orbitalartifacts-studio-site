@@ -51,10 +51,18 @@ export function SceneThumbnail({
   sizes = "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw",
 }: SceneThumbnailProps) {
   if (scene.imageUrl) {
+    // Build a descriptive alt from whatever metadata the scene has. EaA
+    // entries typically lack treatment/subtitle; fall back to title alone.
+    const altParts = [
+      scene.title,
+      scene.subtitle,
+      scene.sensor,
+      scene.treatment?.toLowerCase(),
+    ].filter(Boolean);
     return (
       <Image
         src={scene.imageUrl}
-        alt={`${scene.title}, ${scene.subtitle} — ${scene.sensor} ${scene.treatment.toLowerCase()}`}
+        alt={altParts.join(" — ")}
         fill
         sizes={sizes}
         priority={priority}
@@ -63,15 +71,19 @@ export function SceneThumbnail({
     );
   }
 
-  const [c1, c2, c3] = REGION_PALETTES[scene.region];
+  // Procedural placeholder — only reached when imageUrl is missing, which
+  // shouldn't happen in production but is useful for in-flight drafts.
+  const palette = scene.region ? REGION_PALETTES[scene.region] : REGION_PALETTES.Coast;
+  const [c1, c2, c3] = palette;
   const id = `tile-${scene.catalogueNumber.toLowerCase()}`;
   const seed = hashSeed(scene.catalogueNumber);
   // Delta / coast regions get finer noise to suggest water patterns;
   // desert / mountain get coarser noise to suggest dune / ridgelines.
+  const region = scene.region;
   const frequency =
-    scene.region === "Delta" || scene.region === "Coast"
+    region === "Delta" || region === "Coast"
       ? 1.4
-      : scene.region === "Desert" || scene.region === "Mountain"
+      : region === "Desert" || region === "Mountain"
         ? 0.6
         : 0.9;
 

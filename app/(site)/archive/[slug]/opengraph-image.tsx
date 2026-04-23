@@ -176,10 +176,11 @@ export default async function OGImage({
           >
             <span>
               {scene
-                ? `${scene.sensor} · ${scene.bandCombo}`
+                ? [scene.sensor, scene.bandCombo].filter(Boolean).join(" · ") ||
+                  "Satellite · Archive"
                 : "Satellite · Archive"}
             </span>
-            <span>{scene?.coords.formatted ?? ""}</span>
+            <span>{scene?.coords?.formatted ?? scene?.subtitle ?? ""}</span>
           </div>
         </div>
       </div>

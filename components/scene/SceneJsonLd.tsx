@@ -17,16 +17,17 @@ type SceneJsonLdProps = {
 export function SceneJsonLd({ scene }: SceneJsonLdProps) {
   const url = `${SITE_URL}/archive/${scene.slug}`;
 
-  const payload = {
+  const headlineTail = scene.subtitle ? ` — ${scene.subtitle}` : "";
+  const payload: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "VisualArtwork",
     name: scene.title,
     alternateName: scene.catalogueNumber,
-    headline: `${scene.title} — ${scene.subtitle}`,
+    headline: `${scene.title}${headlineTail}`,
     description:
       scene.narrative && scene.narrative.length > 20
         ? scene.narrative
-        : `${scene.title}, ${scene.subtitle}. ${scene.sensor} · ${scene.bandCombo} · ${scene.treatment} treatment.`,
+        : `${scene.title}${headlineTail}.`,
     url,
     image: scene.imageUrl ? [scene.imageUrl] : undefined,
     dateCreated: scene.acquisitionDate,
@@ -50,8 +51,12 @@ export function SceneJsonLd({ scene }: SceneJsonLdProps) {
       scene.region,
       scene.sensor,
       scene.treatment,
-    ].join(", "),
-    contentLocation: {
+    ]
+      .filter(Boolean)
+      .join(", "),
+  };
+  if (scene.coords) {
+    payload.contentLocation = {
       "@type": "Place",
       name: scene.subtitle,
       geo: {
@@ -59,8 +64,8 @@ export function SceneJsonLd({ scene }: SceneJsonLdProps) {
         latitude: scene.coords.lat,
         longitude: scene.coords.lng,
       },
-    },
-  };
+    };
+  }
 
   return (
     <script
