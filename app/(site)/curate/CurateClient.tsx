@@ -88,6 +88,7 @@ export function CurateClient({
   const [sensorFilter, setSensorFilter] = useState<string>("");
   const [tagFilter, setTagFilter] = useState<string>("");
   const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [hovered, setHovered] = useState<ManifestEntry | null>(null);
 
   const bySlug = useMemo(() => {
@@ -127,17 +128,24 @@ export function CurateClient({
   const save = useCallback(
     async (nextPicks: string[], nextStart: number) => {
       setSaveState("saving");
+      setSaveError(null);
       try {
         const res = await fetch("/api/curate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ picks: nextPicks, startingNumber: nextStart }),
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+          const data = (await res.json().catch(() => ({}))) as {
+            error?: string;
+          };
+          throw new Error(data.error ?? `HTTP ${res.status}`);
+        }
         setSaveState("saved");
         setTimeout(() => setSaveState((s) => (s === "saved" ? "idle" : s)), 1500);
-      } catch {
+      } catch (err) {
         setSaveState("error");
+        setSaveError((err as Error).message);
       }
     },
     [],
@@ -210,6 +218,22 @@ export function CurateClient({
 
   return (
     <div className="min-h-screen font-sans text-ink">
+      {saveError ? (
+        <div
+          role="alert"
+          className="sticky top-0 z-40 border-b border-rust-deep bg-rust-deep/10 px-6 py-3 font-mono text-xs text-rust-deep"
+        >
+          Save failed: {saveError}
+          <button
+            type="button"
+            onClick={() => setSaveError(null)}
+            className="ml-4 underline"
+          >
+            dismiss
+          </button>
+        </div>
+      ) : null}
+
       {/* STICKY TOP: counts, starting number, save */}
       <div className="sticky top-0 z-30 border-b border-sand/40 bg-paper/95 backdrop-blur">
         <div className="mx-auto max-w-[1400px] px-6 pt-4 pb-3">

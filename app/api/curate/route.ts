@@ -1,8 +1,19 @@
+import { createClient } from "next-sanity";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { client } from "@/sanity/lib/client";
+import { apiVersion, dataset, projectId } from "@/sanity/env";
 import { getWriteClient } from "@/sanity/lib/writeClient";
 import { CURATION_SESSION_QUERY } from "@/sanity/queries";
+
+// No CDN — writes must be immediately readable by the next request, or
+// picks appear to "come back" after deletion.
+const freshClient = createClient({
+  projectId,
+  dataset,
+  apiVersion,
+  useCdn: false,
+  perspective: "published",
+});
 
 export const dynamic = "force-dynamic";
 
@@ -53,7 +64,7 @@ export async function GET() {
   }
   if (!(await authed())) return unauthorized();
 
-  const doc = await client.fetch<Selections | null>(CURATION_SESSION_QUERY);
+  const doc = await freshClient.fetch<Selections | null>(CURATION_SESSION_QUERY);
   return NextResponse.json(
     doc ?? { startingNumber: 10, picks: [], updatedAt: null, updatedBy: null },
   );
@@ -65,32 +76,41 @@ export async function POST(req: Request) {
   }
   if (!(await authed())) return unauthorized();
 
-  const body = (await req.json().catch(() => ({}))) as {
-    picks?: unknown;
-    startingNumber?: unknown;
-    updatedBy?: unknown;
-  };
-  const picks = Array.isArray(body.picks)
-    ? (body.picks.filter((s) => typeof s === "string") as string[])
-    : [];
-  const startingNumber =
-    typeof body.startingNumber === "number" && Number.isFinite(body.startingNumber)
-      ? Math.max(1, Math.floor(body.startingNumber))
-      : 10;
-  const updatedBy =
-    typeof body.updatedBy === "string" && body.updatedBy.trim().length > 0
-      ? body.updatedBy.trim().slice(0, 60)
-      : undefined;
+  try {
+    const body = (await req.json().catch(() => ({}))) as {
+      picks?: unknown;
+      startingNumber?: unknown;
+      updatedBy?: unknown;
+    };
+    const picks = Array.isArray(body.picks)
+      ? (body.picks.filter((s) => typeof s === "string") as string[])
+      : [];
+    const startingNumber =
+      typeof body.startingNumber === "number" && Number.isFinite(body.startingNumber)
+        ? Math.max(1, Math.floor(body.startingNumber))
+        : 10;
+    const updatedBy =
+      typeof body.updatedBy === "string" && body.updatedBy.trim().length > 0
+        ? body.updatedBy.trim().slice(0, 60)
+        : undefined;
 
-  const writeClient = getWriteClient();
-  await writeClient.createOrReplace({
-    _id: "curationSession",
-    _type: "curationSession",
-    startingNumber,
-    picks,
-    updatedAt: new Date().toISOString(),
-    ...(updatedBy ? { updatedBy } : {}),
-  });
+    const writeClient = getWriteClient();
+    await writeClient.createOrReplace({
+      _id: "curationSession",
+      _type: "curationSession",
+      startingNumber,
+      picks,
+      updatedAt: new Date().toISOString(),
+      ...(updatedBy ? { updatedBy } : {}),
+    });
 
-  return NextResponse.json({ ok: true, saved: picks.length });
+    return NextResponse.json({ ok: true, saved: picks.length });
+  } catch (err) {
+    // Surface the real Sanity error (token missing, dataset mismatch,
+    // validation) so the curator sees something useful instead of a
+    // silent "save failed" indicator.
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[/api/curate] write failed:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }

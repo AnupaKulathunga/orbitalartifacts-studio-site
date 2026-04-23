@@ -1,12 +1,25 @@
 import fs from "node:fs";
 import path from "node:path";
+import { createClient } from "next-sanity";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { client } from "@/sanity/lib/client";
+import { apiVersion, dataset, projectId } from "@/sanity/env";
 import { CURATION_SESSION_QUERY } from "@/sanity/queries";
 import { CurateClient, type ManifestEntry, type Selections } from "./CurateClient";
 import { CurateLogin } from "./CurateLogin";
+
+// Dedicated non-CDN client for the curation session — Sanity's CDN can
+// serve a stale snapshot for several seconds after a write, which was
+// making deletes "pop back" on reload. Public docs like scenes/press
+// can still use the CDN-backed `client`; this one sees edits instantly.
+const freshClient = createClient({
+  projectId,
+  dataset,
+  apiVersion,
+  useCdn: false,
+  perspective: "published",
+});
 
 export const metadata: Metadata = {
   title: "Curate",
@@ -50,7 +63,9 @@ export default async function CuratePage() {
   }
 
   const manifest = readManifest();
-  const session = await client.fetch<Selections | null>(CURATION_SESSION_QUERY);
+  const session = await freshClient.fetch<Selections | null>(
+    CURATION_SESSION_QUERY,
+  );
   const selections: Selections = session ?? {
     startingNumber: 10,
     picks: [],
