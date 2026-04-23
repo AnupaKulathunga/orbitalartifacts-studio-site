@@ -28,6 +28,15 @@ export default defineConfig({
                   .schemaType("siteSettings")
                   .documentId("siteSettings"),
               ),
+            S.listItem()
+              .title("Curation session")
+              .id("curationSession")
+              .child(
+                S.editor()
+                  .id("curationSession")
+                  .schemaType("curationSession")
+                  .documentId("curationSession"),
+              ),
             S.divider(),
             S.documentTypeListItem("scene").title("Scenes"),
             S.documentTypeListItem("pressEntry").title("Press"),

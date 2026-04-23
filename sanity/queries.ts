@@ -90,3 +90,12 @@ export const SITE_SETTINGS_QUERY = groq`
     "marketplaceLinks": coalesce(marketplaceLinks[]{ platform, url }, []),
   }
 `;
+
+export const CURATION_SESSION_QUERY = groq`
+  *[_id == "curationSession"][0]{
+    startingNumber,
+    "picks": coalesce(picks, []),
+    updatedAt,
+    updatedBy,
+  }
+`;

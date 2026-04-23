@@ -1,10 +1,10 @@
 /**
  * Ingests curated Earth as Art entries into the Sanity dataset.
  *
- * Inputs (both in `data/`):
- *   - `eaa-manifest.json`   → every EaA entry fetched via fetch:eaa
- *   - `eaa-selections.json` → the user's curated pick list + starting
- *                             catalogue number, produced by /curate
+ * Inputs:
+ *   - `data/eaa-manifest.json` → every EaA entry fetched via fetch:eaa
+ *   - Sanity `curationSession` singleton → pick list + starting number,
+ *     written by whoever is using /curate (yourself or a collaborator)
  *
  * For each pick, in the selected order:
  *   1. Assign `OA-<startingNumber + index>` as catalogueNumber
@@ -20,7 +20,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { client as readClient } from "../sanity/lib/client";
 import { getWriteClient } from "../sanity/lib/writeClient";
+import { CURATION_SESSION_QUERY } from "../sanity/queries";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,7 +43,12 @@ type ManifestEntry = {
   tags?: string[];
 };
 
-type Selections = { startingNumber: number; picks: string[] };
+type Selections = {
+  startingNumber: number;
+  picks: string[];
+  updatedAt?: string;
+  updatedBy?: string | null;
+};
 
 function pad(n: number): string {
   return String(n).padStart(3, "0");
@@ -53,6 +60,32 @@ function loadJson<T>(relPath: string): T {
     throw new Error(`Missing ${relPath}. Run the upstream step first.`);
   }
   return JSON.parse(fs.readFileSync(p, "utf-8")) as T;
+}
+
+async function loadSelections(): Promise<Selections> {
+  // The deployed /curate UI writes into Sanity, so that's our primary
+  // source. Fall back to the local file — handy when the curator is
+  // working offline and hand-edits `data/eaa-selections.json`.
+  const fromSanity = await readClient.fetch<Selections | null>(
+    CURATION_SESSION_QUERY,
+  );
+  if (fromSanity && fromSanity.picks && fromSanity.picks.length > 0) {
+    console.log(
+      `Using curation session from Sanity (${fromSanity.picks.length} picks` +
+        (fromSanity.updatedBy ? `, saved by ${fromSanity.updatedBy}` : "") +
+        ").",
+    );
+    return fromSanity;
+  }
+  const filePath = path.join(REPO_ROOT, "data", "eaa-selections.json");
+  if (fs.existsSync(filePath)) {
+    console.log("Using curation session from data/eaa-selections.json.");
+    return JSON.parse(fs.readFileSync(filePath, "utf-8")) as Selections;
+  }
+  throw new Error(
+    "No curation session found. Pick scenes at /curate (saved to Sanity), " +
+      "or write data/eaa-selections.json locally.",
+  );
 }
 
 function narrativeToPortableText(text: string) {
@@ -135,10 +168,10 @@ async function main() {
     parseInt(args.find((a) => a.startsWith("--limit="))?.slice(8) ?? "0") || 0;
 
   const manifest = loadJson<ManifestEntry[]>("data/eaa-manifest.json");
-  const selections = loadJson<Selections>("data/eaa-selections.json");
+  const selections = await loadSelections();
 
   if (!selections.picks.length) {
-    console.error("No picks in data/eaa-selections.json — run /curate first.");
+    console.error("No picks — open /curate (or /studio → Curation session) first.");
     process.exit(1);
   }
 

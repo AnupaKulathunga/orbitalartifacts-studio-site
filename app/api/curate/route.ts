@@ -1,45 +1,96 @@
-import fs from "node:fs";
-import path from "node:path";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { client } from "@/sanity/lib/client";
+import { getWriteClient } from "@/sanity/lib/writeClient";
+import { CURATION_SESSION_QUERY } from "@/sanity/queries";
 
 export const dynamic = "force-dynamic";
 
-const SELECTIONS_PATH = path.join(process.cwd(), "data", "eaa-selections.json");
-
 /**
- * Dev-only. The UI at /curate posts picks here; we persist them to
- * `data/eaa-selections.json` so curation state lives with the repo.
- * In production, the route 404s — the gate is NODE_ENV, same as the page.
+ * Read/write the shared curation session.
+ *
+ * Persists to a Sanity singleton (id=`curationSession`) because Vercel's
+ * runtime filesystem is read-only — we can't write JSON files in preview
+ * or production. Sanity also means both curators see the same picks and
+ * Anupa can pull the picks into ingestion from anywhere.
+ *
+ * Access is gated two ways:
+ *  - `VERCEL_ENV === "production"` returns 404, no matter what. /curate
+ *    is preview-only; the live site never exposes it.
+ *  - Everywhere else, requests must carry a `curate_auth` cookie with
+ *    the right `CURATE_PASSWORD`. Local `next dev` bypasses this when
+ *    no CURATE_PASSWORD is set, so you can test without a code.
  */
-function requireDev() {
-  if (process.env.NODE_ENV !== "development") {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-  return null;
+
+function prodBlocked() {
+  return process.env.VERCEL_ENV === "production";
 }
 
+async function authed(): Promise<boolean> {
+  const expected = process.env.CURATE_PASSWORD;
+  // Local dev without a password set → allow. Setting CURATE_PASSWORD
+  // locally is still supported if you want to smoke-test the gate.
+  if (!expected && process.env.NODE_ENV !== "production") return true;
+  if (!expected) return false;
+  const jar = await cookies();
+  return jar.get("curate_auth")?.value === expected;
+}
+
+function unauthorized() {
+  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+}
+
+type Selections = {
+  startingNumber: number;
+  picks: string[];
+  updatedAt?: string;
+  updatedBy?: string | null;
+};
+
 export async function GET() {
-  const block = requireDev();
-  if (block) return block;
-  if (!fs.existsSync(SELECTIONS_PATH)) {
-    return NextResponse.json({ startingNumber: 10, picks: [] });
+  if (prodBlocked()) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  return NextResponse.json(JSON.parse(fs.readFileSync(SELECTIONS_PATH, "utf-8")));
+  if (!(await authed())) return unauthorized();
+
+  const doc = await client.fetch<Selections | null>(CURATION_SESSION_QUERY);
+  return NextResponse.json(
+    doc ?? { startingNumber: 10, picks: [], updatedAt: null, updatedBy: null },
+  );
 }
 
 export async function POST(req: Request) {
-  const block = requireDev();
-  if (block) return block;
+  if (prodBlocked()) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+  if (!(await authed())) return unauthorized();
 
-  const body = await req.json();
-  const picks = Array.isArray(body?.picks) ? body.picks.filter((s: unknown) => typeof s === "string") : [];
+  const body = (await req.json().catch(() => ({}))) as {
+    picks?: unknown;
+    startingNumber?: unknown;
+    updatedBy?: unknown;
+  };
+  const picks = Array.isArray(body.picks)
+    ? (body.picks.filter((s) => typeof s === "string") as string[])
+    : [];
   const startingNumber =
-    typeof body?.startingNumber === "number" && Number.isFinite(body.startingNumber)
+    typeof body.startingNumber === "number" && Number.isFinite(body.startingNumber)
       ? Math.max(1, Math.floor(body.startingNumber))
       : 10;
+  const updatedBy =
+    typeof body.updatedBy === "string" && body.updatedBy.trim().length > 0
+      ? body.updatedBy.trim().slice(0, 60)
+      : undefined;
 
-  const payload = { startingNumber, picks };
-  fs.mkdirSync(path.dirname(SELECTIONS_PATH), { recursive: true });
-  fs.writeFileSync(SELECTIONS_PATH, JSON.stringify(payload, null, 2) + "\n");
-  return NextResponse.json({ ok: true, saved: payload.picks.length });
+  const writeClient = getWriteClient();
+  await writeClient.createOrReplace({
+    _id: "curationSession",
+    _type: "curationSession",
+    startingNumber,
+    picks,
+    updatedAt: new Date().toISOString(),
+    ...(updatedBy ? { updatedBy } : {}),
+  });
+
+  return NextResponse.json({ ok: true, saved: picks.length });
 }
