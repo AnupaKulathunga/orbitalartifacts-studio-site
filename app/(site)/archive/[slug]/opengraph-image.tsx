@@ -18,7 +18,7 @@ export default async function OGImage({
 
   // Sanity CDN URL → fetch at bigger size so the OG image is sharp.
   const heroUrl = scene?.imageUrl
-    ? `${scene.imageUrl}?w=1600&q=85&fit=clip`
+    ? `${scene.imageUrl}${scene.imageUrl.includes("?") ? "&" : "?"}w=1600&q=85&fit=clip`
     : null;
 
   return new ImageResponse(

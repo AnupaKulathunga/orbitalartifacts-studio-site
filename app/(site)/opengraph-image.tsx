@@ -12,7 +12,7 @@ export default async function OGImage() {
   const fonts = await loadOgFonts();
 
   const heroUrl = hero?.imageUrl
-    ? `${hero.imageUrl}?w=1600&q=85&fit=clip`
+    ? `${hero.imageUrl}${hero.imageUrl.includes("?") ? "&" : "?"}w=1600&q=85&fit=clip`
     : null;
 
   return new ImageResponse(
