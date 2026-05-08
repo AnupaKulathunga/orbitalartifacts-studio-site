@@ -34,6 +34,11 @@ const SCENE_PROJECTION = groq`{
   sourceUrl,
   sourceCollection,
   sourceCredit,
+  seoTitle,
+  seoDescription,
+  keywords,
+  editionSize,
+  remaining,
   "narrative": pt::text(narrative),
   // ?fm=webp lets Sanity negotiate WebP when the browser supports it
   // (Chrome, Firefox, Safari 14+) and falls back to JPEG elsewhere —
@@ -49,24 +54,28 @@ const SCENE_PROJECTION = groq`{
   publishedAt,
 }`;
 
+// `publishedAt <= now()` enforces the staggered release schedule — scenes
+// with future dates are silently invisible until their date passes. ISR
+// (60s) makes scheduled releases appear without redeploys.
+//
 // Catalogue number is the canonical order: OA-001 leads, OA-NNN follows.
 // Lexicographic sort works because numbers are fixed-width (3+ digits).
 export const ALL_SCENES_QUERY = groq`
-  *[_type == "scene" && defined(slug.current)]
+  *[_type == "scene" && defined(slug.current) && publishedAt <= now()]
   | order(catalogueNumber asc) ${SCENE_PROJECTION}
 `;
 
 export const FEATURED_SCENES_QUERY = groq`
-  *[_type == "scene" && featured == true && defined(slug.current)]
+  *[_type == "scene" && featured == true && defined(slug.current) && publishedAt <= now()]
   | order(catalogueNumber asc) ${SCENE_PROJECTION}
 `;
 
 export const SCENE_BY_SLUG_QUERY = groq`
-  *[_type == "scene" && slug.current == $slug][0] ${SCENE_PROJECTION}
+  *[_type == "scene" && slug.current == $slug && publishedAt <= now()][0] ${SCENE_PROJECTION}
 `;
 
 export const SCENE_SLUGS_QUERY = groq`
-  *[_type == "scene" && defined(slug.current)].slug.current
+  *[_type == "scene" && defined(slug.current) && publishedAt <= now()].slug.current
 `;
 
 export const PRESS_ENTRIES_QUERY = groq`
