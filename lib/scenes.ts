@@ -76,6 +76,13 @@ export type Scene = {
   sourceUrl?: string;
   sourceCollection?: number;
   sourceCredit?: string;
+  // SEO:
+  seoTitle?: string;
+  seoDescription?: string;
+  keywords?: string[];
+  // Edition / stock:
+  editionSize?: number;
+  remaining?: number;
   narrative: string;
   imageUrl?: string;
   availability: MarketplaceLink[];

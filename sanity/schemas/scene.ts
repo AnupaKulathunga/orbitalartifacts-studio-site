@@ -49,6 +49,7 @@ export const scene = defineType({
     { name: "content", title: "Content" },
     { name: "imagery", title: "Imagery" },
     { name: "source", title: "Provenance" },
+    { name: "seo", title: "SEO" },
     { name: "shop", title: "Shop" },
   ],
   fields: [
@@ -253,6 +254,52 @@ export const scene = defineType({
       type: "array",
       group: "shop",
       of: [defineArrayMember({ type: "marketplaceLink" })],
+    }),
+    defineField({
+      name: "editionSize",
+      title: "Edition size",
+      description:
+        "Total number of prints in the limited edition. Set per scene to drive scarcity.",
+      type: "number",
+      group: "shop",
+      validation: (rule) => rule.min(1).integer(),
+    }),
+    defineField({
+      name: "remaining",
+      title: "Remaining stock",
+      description:
+        "Update manually as orders fulfil. Site shows '<remaining> of <editionSize> remaining'.",
+      type: "number",
+      group: "shop",
+      validation: (rule) => rule.min(0).integer(),
+    }),
+
+    defineField({
+      name: "seoTitle",
+      title: "SEO title",
+      description:
+        "Overrides the default page title. Aim for 50-60 chars. Default: '<title> — <subtitle> · Orbital Artifacts'.",
+      type: "string",
+      group: "seo",
+    }),
+    defineField({
+      name: "seoDescription",
+      title: "SEO description",
+      description:
+        "Meta description + opening narrative for the scene page. 150-300 words. Generated automatically; edit to refine.",
+      type: "text",
+      rows: 6,
+      group: "seo",
+    }),
+    defineField({
+      name: "keywords",
+      title: "Keywords",
+      description:
+        "Search terms surfaced in <meta name='keywords'> and marketplace tag suggestions.",
+      type: "array",
+      of: [defineArrayMember({ type: "string" })],
+      options: { layout: "tags" },
+      group: "seo",
     }),
 
     defineField({

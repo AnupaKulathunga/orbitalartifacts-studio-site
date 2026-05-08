@@ -54,16 +54,21 @@ export async function generateMetadata({
   const { slug } = await params;
   const scene = await getSceneBySlug(slug);
   if (!scene) return { title: "Scene not found" };
-  const descBits = [
-    scene.catalogueNumber,
-    scene.sensor,
-    scene.bandCombo,
-    scene.coords?.formatted,
-  ].filter(Boolean);
-  return {
-    title: scene.subtitle ? `${scene.title} — ${scene.subtitle}` : scene.title,
-    description: descBits.join(" · "),
-  };
+
+  // Prefer the curated SEO fields when set; fall back to title + sensor
+  // metadata so freshly-ingested scenes still produce reasonable tags.
+  const title =
+    scene.seoTitle ??
+    (scene.subtitle ? `${scene.title} — ${scene.subtitle}` : scene.title);
+  const description =
+    scene.seoDescription ??
+    [scene.catalogueNumber, scene.sensor, scene.bandCombo, scene.coords?.formatted]
+      .filter(Boolean)
+      .join(" · ");
+  const keywords = scene.keywords && scene.keywords.length > 0
+    ? scene.keywords.join(", ")
+    : undefined;
+  return { title, description, keywords };
 }
 
 export default async function ScenePage({ params }: { params: Params }) {
@@ -159,6 +164,23 @@ export default async function ScenePage({ params }: { params: Params }) {
           ) : null}
 
           <hr className="mt-10 max-w-md border-t border-sand/40" />
+
+          {scene.editionSize ? (
+            <div className="mt-8 max-w-md">
+              <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted">
+                Limited edition
+              </p>
+              <p className="mt-2 font-serif text-2xl text-ink">
+                {scene.remaining ?? scene.editionSize} of {scene.editionSize}{" "}
+                <span className="text-base text-ink-2">remaining</span>
+              </p>
+              {scene.remaining === 0 ? (
+                <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.22em] text-rust-deep">
+                  Sold out
+                </p>
+              ) : null}
+            </div>
+          ) : null}
 
           <div className="mt-8 max-w-md">
             <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted">
