@@ -108,11 +108,11 @@ export function ProcessTeaser() {
             <span className="italic text-rust">to a print.</span>
           </h2>
           <p className="mt-7 max-w-md font-sans text-base leading-[1.65] text-ink-2">
-            Every scene starts in light your eyes can&rsquo;t see &mdash;
-            shortwave-infrared, thermal, near-infrared. Captured by NASA
-            and ESA satellites, decoded by remote-sensing scientists at
-            the USGS EROS Center, then composed and framed by the studio.
-            Limited editions on archival paper, signed and numbered.
+            Every print passes through five sets of hands before it
+            reaches a wall. A satellite. A multispectral sensor. A team of
+            scientists. An editorial studio. A printer&rsquo;s press.
+            Pigment on cotton, signed and numbered, edition capped, never
+            reprinted.
           </p>
           <Link
             href="/process"

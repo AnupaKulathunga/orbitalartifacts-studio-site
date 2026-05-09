@@ -39,11 +39,10 @@ export function Hero({ scenes }: HeroProps) {
           />
 
           <p className="mt-8 max-w-md font-sans text-base leading-[1.6] text-ink-2">
-            Every print begins 700 km above Earth, in wavelengths your eyes
-            can&rsquo;t see. Captured by NASA and ESA satellites, decoded
-            by remote-sensing scientists at the USGS EROS Center, then
-            framed and printed by the Orbital Artifacts studio. A
-            limited-edition catalogue.
+            Every print begins 705 km above Earth, recording light your
+            eyes can&rsquo;t see. NASA and ESA satellites capture it.
+            Scientists at the USGS EROS Center decode it. The studio
+            frames it. Editions are small. Reprints don&rsquo;t exist.
           </p>
 
           <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4 font-mono text-[11px] uppercase tracking-[0.22em]">
