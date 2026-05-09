@@ -48,10 +48,10 @@ export function AboutTeaser() {
             from Sri Lanka.
           </h2>
           <p className="mt-7 max-w-xl font-sans text-base leading-[1.65] text-ink-2">
-            A one-person studio working at the seam between Earth
-            observation and image-making. The source material is
-            open &mdash; Landsat, Sentinel, the public archive &mdash;
-            and the output is print, framed with its own coordinates.
+            A design studio working at the seam of Earth observation and
+            image-making. Every print travels a chain &mdash; satellite,
+            sensor, scientist, studio. The source is open data; the
+            curation, framing, and print are ours.
           </p>
           <Link
             href="/about"

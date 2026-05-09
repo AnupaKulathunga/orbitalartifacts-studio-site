@@ -66,6 +66,7 @@ export function SceneThumbnail({
         fill
         sizes={sizes}
         priority={priority}
+        quality={82}
         className={cn("object-cover", className)}
       />
     );

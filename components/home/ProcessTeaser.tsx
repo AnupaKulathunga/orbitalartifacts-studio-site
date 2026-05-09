@@ -108,10 +108,11 @@ export function ProcessTeaser() {
             <span className="italic text-rust">to a print.</span>
           </h2>
           <p className="mt-7 max-w-md font-sans text-base leading-[1.65] text-ink-2">
-            Every scene begins as public data — Sentinel-2, Landsat, ASTER —
-            composited through SNAP into a band combination that reveals
-            what the eye can&rsquo;t. Then it&rsquo;s framed with its own
-            coordinates and printed at museum grade.
+            Every scene starts in light your eyes can&rsquo;t see &mdash;
+            shortwave-infrared, thermal, near-infrared. Captured by NASA
+            and ESA satellites, decoded by remote-sensing scientists at
+            the USGS EROS Center, then composed and framed by the studio.
+            Limited editions on archival paper, signed and numbered.
           </p>
           <Link
             href="/process"

@@ -72,6 +72,7 @@ export function HeroRotator({ scenes }: HeroRotatorProps) {
                 fill
                 sizes="(min-width: 1024px) 45vw, 100vw"
                 priority={i === 0}
+                quality={85}
                 className="object-cover"
                 style={{
                   opacity: i === index ? 1 : 0,
