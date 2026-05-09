@@ -108,10 +108,11 @@ export function ProcessTeaser() {
             <span className="italic text-rust">to a print.</span>
           </h2>
           <p className="mt-7 max-w-md font-sans text-base leading-[1.65] text-ink-2">
-            Every scene begins as public data — Sentinel-2, Landsat, ASTER —
-            composited through SNAP into a band combination that reveals
-            what the eye can&rsquo;t. Then it&rsquo;s framed with its own
-            coordinates and printed at museum grade.
+            Every print passes through five sets of hands before it
+            reaches a wall. A satellite. A multispectral sensor. A team of
+            scientists. An editorial studio. A printer&rsquo;s press.
+            Pigment on cotton, signed and numbered, edition capped, never
+            reprinted.
           </p>
           <Link
             href="/process"

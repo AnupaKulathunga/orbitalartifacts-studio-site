@@ -19,10 +19,11 @@ export default function ProcessPage() {
         <br />
         <span className="italic text-rust">to a print.</span>
       </h1>
-      <p className="mt-8 max-w-xl font-sans text-base leading-[1.65] text-ink-2">
-        Every scene in the archive is the output of a slow pipeline that
-        starts with freely-available Earth observation data and ends with
-        pigment on cotton paper. Here&rsquo;s how.
+      <p className="mt-8 max-w-xl font-sans text-lg leading-[1.55] italic text-ink-2">
+        Every print in this catalogue passes through five sets of hands
+        before it reaches a wall &mdash; a satellite, a sensor, a team of
+        scientists, an editorial studio, a printer&rsquo;s press. Here is
+        the chain, in order.
       </p>
 
       <Reveal>

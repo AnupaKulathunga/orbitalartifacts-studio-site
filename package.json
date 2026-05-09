@@ -13,7 +13,8 @@
     "purge:lorem": "node --env-file=.env.local --import tsx scripts/purge-lorem-scenes.ts",
     "generate:seo": "node --env-file=.env.local --import tsx scripts/generate-seo.ts",
     "check:curation": "node --env-file=.env.local --import tsx scripts/check-curation.ts",
-    "crop:chrome": "node --env-file=.env.local --import tsx scripts/crop-chrome.ts"
+    "crop:chrome": "node --env-file=.env.local --import tsx scripts/crop-chrome.ts",
+    "patch:data": "node --env-file=.env.local --import tsx scripts/patch-data.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",

@@ -13,6 +13,12 @@ const nextConfig: NextConfig = {
   // Allow .mdx alongside .tsx for pages and content imports.
   pageExtensions: ["ts", "tsx", "mdx"],
   images: {
+    // Custom loader sends resizes to Sanity's CDN directly (URL params)
+    // and falls through for non-Sanity sources. Avoids the `_next/image`
+    // proxy hop on the heaviest assets and keeps the global config so
+    // we don't have to thread loader props through server→client.
+    loader: "custom",
+    loaderFile: "./lib/imageLoader.ts",
     remotePatterns: [
       { protocol: "https", hostname: "cdn.sanity.io" },
     ],
